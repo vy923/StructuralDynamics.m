@@ -6,8 +6,12 @@
 %       See also:       tablePSD
 %       Related:        scalePSD, integratePSD
 %
+%   UPDATES
+%       - interpolate accross a table split by discontinuity
+%       - handle +/-Inf slopes consistently with mid-band discontinuity
+%
 %   VERSION
-%       v1.1 / 16.10.22 / V Yotov   extrapolation uses actual end band slopes
+%       v1.1 / 16.10.22 / --        extrapolation uses actual end band slopes
 %       v1.0 / 14.10.22 / V.Yotov
 %  ------------------------------------------------------------------------------------------------
 

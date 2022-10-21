@@ -10,6 +10,7 @@
 %
 %   UPDATES
 %       - optional argument f which automatically calls scalePSD, etc.
+%       - robust handling of Inf slopes
 %
 %   VERSION
 %       v1.0 / 14.10.22 / V.Yotov

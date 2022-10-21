@@ -21,7 +21,7 @@
 %           methInterp  time vec interpopation method, default = 'linear'
 %           methSRS     any combination of {'disp','vel','acc'}, default = 'acc'
 %           signSRS     any combination of {'+','-','abs'}, default = 'abs'
-%	        f0          [Hz] start frequency, default = 100
+%           f0          [Hz] start frequency, default = 100
 %           f1          [Hz] end frequency, default = 10000
 %           zeta        modal damping of SDOF systems, default = 0.05
 %

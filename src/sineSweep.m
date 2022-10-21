@@ -62,7 +62,7 @@
 %       quadgk error with tr == 0 and out ~= -1
 %
 %   VERSION
-%       v2.1 / 24.06.22 / V.Yotov   updated opts unpacking to workspace
+%       v2.1 / 24.06.22 / --        updated opts unpacking to workspace
 %       v2.0 / 01.03.22 / V.Yotov
 %  ------------------------------------------------------------------------------------------------
 
@@ -148,7 +148,7 @@ if ismember(-1,output)
 
     y = [ Rf(t(1:nR-1));  sin(phi(t(nR:end))) ];
 
-% ------ corrections  for v or u
+% ------ corrections for v or u
 else 
     
 % Antiderivative without integration constant
@@ -425,21 +425,6 @@ p3 = fplot(@(x)g(x).*w(x),[0 tr],'color',col{co(3)},'linestyle','-','linewidth',
 legend([p1 p2 p3],'\pmg(x)','\pmg(x)+w(x)','g(x)(\pm1+w(x))','location','northwest')
 legend([p1 p3],'\pmg(x)','g(x)(\pm1+w(x))','location','northwest')
 title(sprintf(['Normalised S%.0f ' 'ramp function with offset'],n))
-
-% --------------------- useful code ---------------------
-opts = {'fontsize',14,'interpreter','latex'};
-xlabel('$t/t_r$',opts{:})
-ylabel('$y(t)$',opts{:})
-
-fig = gcf;
-fig.Position = [300 100 640 480];
-fig.PaperSize = fig.Position(3:4);
-set(gca,'LooseInset',get(gca,'TightInset'))
-
-cd('C:\Users\vvyot\Desktop\')
-    exportgraphics(gca,'fig.pdf','BackgroundColor','none','ContentType','vector')
-cd('C:\Users\vvyot\Desktop\')         
-
 %}
 
 
