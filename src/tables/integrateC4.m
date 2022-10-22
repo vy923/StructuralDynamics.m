@@ -1,6 +1,6 @@
 %  ------------------------------------------------------------------------------------------------
 %   DESCRIPTION
-%       [X,Xb] = integratePSD(T)
+%       [X,Xb] = integrateC4(T,f)
 %
 %       Integrates a PSD table given by T and returns total and band RMS values in X, Xb
 %       Note that X = sqrt(sum(Xb.^2))
@@ -16,7 +16,7 @@
 %       v1.0 / 14.10.22 / V.Yotov
 %  ------------------------------------------------------------------------------------------------
 
-function [X,Xb] = integratePSD(T)
+function [X,Xb] = integrateC4(T)
 
 % Validate/complete T
     T = tablePSD(T);

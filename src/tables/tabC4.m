@@ -1,19 +1,30 @@
 %  ------------------------------------------------------------------------------------------------
 %   DESCRIPTION
-%       T = tablePSD(T,opts)
+%       T = tabC4(T,opts)
 %
-%       See also:       mapDOF
-%       Related:        interpPSD, scalePSD, integratePSD
+%       See also:       mapSet, mustBeMemberSCI
+%       External:       v2struct
+%       Related:        interpC4, scaleC4, integrateC4
 %
 %   INPUTS
 %       T               [nband + 1 x c] table with c = 2/3/4 and NaN empty fields
 %           c == 2      assumes [f W]
 %           c == 3      assumes [f W RS]
 %           c == 4      must be [f W LS RS]
+%
 %       opts{:}
-%           type        [---------------] default = 'loglog'
-%           split       autosplit table on inconsistent +/-Inf slopes, default = true
-%           epstol      eps tolerance scaling for comparisons, default = 1E+4   
+%           type        table type, currently only "PSD"
+%               "PSD"   default, assumes log-log and dB/oct slope units
+%
+%           split       autosplit table on discontinuities
+%               true    default, handles +/-inf, discontinuities 
+%               false   assumes double points are given explicitly
+%
+%           optimise    
+%               true    default
+%               false   allows redundant points, e.g. midpoint of constant band
+%
+%           epstol      eps tolerance scaling for comparisons, default = 1E+4  
 %           ls          left slope of first band
 %           rs          right slope of final band
 %
@@ -24,19 +35,23 @@
 %       - comparison handling for +/-Inf values
 %       - handle / interpolate discontinuities
 %       - optimise=0/1 to remove bands with const. PSD/LS/RS
+%       - auto slopes when ending on zero
+%       - combine table i.e. with optimise + sort
+%       - extend zeros to next or keep?
 %
 %   VERSION
-%       v2.0 / 22.10.22 / --        handling of zero PSD, +/-Inf slopes, discontinuous tables 
+%       v2.0 / 22.10.22 / --        handling of zero PSD, +/-inf slopes,  discontinuous tables
 %       v1.1 / 16.10.22 / --        epstol, extrapolation slopes for end bands
 %       v1.0 / 14.10.22 / V.Yotov
 %  ------------------------------------------------------------------------------------------------
 
-function T = tablePSD(T,opts)
+function T = tabC4(T,opts)
 
 arguments
     T
-    opts.type = 'log-log' %  [---------------]
+    opts.type {mustBeMemberSCI(opts.type,["PSD"])} = "PSD"
     opts.split (1,1) {mustBeMember(opts.split,[0 1])} = true
+    opts.optimise (1,1) {mustBeMember(opts.optimise,[0 1])} = true
     opts.epstol (1,1) {mustBePositive} = 1E+4
     opts.ls (1,1) {mustBeReal} = NaN
     opts.rs (1,1) {mustBeReal} = NaN
@@ -47,19 +62,19 @@ end
 
 
 
-T = [   32      34      nan
-        50      69      nan
-        63      77      nan
-        40      94      -inf
-        80      86      -inf
-        100     0       nan
-        125     0       nan
-        125     10      nan
-        1000    4       nan
-        160     108     nan
-        1600    1       nan
-        2000    1       nan
-        2500    0       nan  ];
+T = [     32          34         NaN         NaN
+          40          94         NaN         -inf
+          50          69         NaN         NaN
+          63          77         NaN         NaN
+          80          86        -Inf         NaN
+         100           0         NaN         NaN
+         125           0         NaN         NaN
+         125          10         NaN         NaN
+         160         108         NaN         Inf
+        1000           4         NaN         NaN
+        1600           1        -Inf         NaN
+        2000           1         NaN         Inf
+        2500           0         NaN         NaN    ];
 
 
 
@@ -81,21 +96,29 @@ end
 
 % Split discontinuous tables
    
-% [PSD==0 or LS==-Inf or prev. RS==Inf] and [prev. freq. is not the same, prev. PSD~=0]
-% Add a frequency to the left
-    maskL = (T(:,2)==0 | T(:,3)==-Inf | [NaN; T(1:end-1,4)]==Inf) & ...
-            ([NaN; T(1:end-1,1)]~=T(:,1) & [NaN; T(1:end-1,2)]~=0);
-    idxL  = cumsum(maskL) + (1:size(T,1))';
-    TL     = mapSet(idxL, 1:idxL(end), T)
 
 
+% Prev RS~=Inf & F ~= Pref F & Prev PSD ~=0
+% PSD==0 | LS==-Inf
+    maskL = [NaN; T(1:end-1,4)]~=Inf & [NaN; T(1:end-1,1)]~=T(:,1) & [NaN; T(1:end-1,2)]~=0;
+    maskL = maskL & [T(:,2)==0 | T(:,3)==-Inf];
 
+% Next LS~=-Inf & F ~= Next F & Next PSD ~=0
+% PSD==0 | RS==-Inf 
+    maskR = [T(2:end,4); NaN]~=-Inf & [T(2:end,1); NaN]~=T(:,1) & [T(2:end,2); NaN]~=0;
+    maskR = maskR & [T(:,2)==0 | T(:,4)==-Inf];
 
-% [PSD==0 or RS==Inf or next LS==-Inf] and next freq. is not the same
-% Add a frequency to the right
-    maskR = (T(:,2)==0 | [T(2:end,3); NaN]==-Inf | T(:,4)==Inf) & ([T(2:end,1); NaN]~=T(:,1));       
-    idxR  = cumsum(maskR) + (1:size(T,1))';
-    TR     = mapSet(idxR, 1:idxR(end), T)
+[T maskL maskR]
+
+% Map left
+idxLN = find(maskL) + [0:nnz(maskL)-1]';
+idxLO = [1:size(T,1)]' + cumsum(maskL);
+TL(idxLO,:) = T;
+TL(idxLN,:) = [NaN NaN NaN NaN]
+
+% Slope -> keep
+% Zero -> extend
+
 
 
 % Constants 
@@ -111,12 +134,6 @@ end
     maskNNS = ~isnan([LS RS]);                                                      % [nband x 2] non-NaN slopes
     maskCW = T(2:end,2)==T(1:end-1,2);                                              % [nband x 1] constant PSD bands
     maskNB = isnan([T(2:end,2) T(1:end-1,2)]);                                      % [nband x 2] NaN band ends
-    %maskZWB = F2==F1;                                                               % [nband x 1] zero width bands
-
-    % Error if RS==inf, PSD~=0 --> see if computation catches it
-    % DOn't fill in inf values...
-    % Split table here... 
-    %T = splittable(T);
           
     if any(maskCW & any([LS RS]~=0 & maskNNS, 2))                                   % const W band with nonzero RS or LS 
         error("interpPSD: nonzero slope in constant PSD band")
@@ -174,7 +191,7 @@ end
         idxL = find(maskL);
         idxW = find(maskW);
 
-        tmpW2 = W1(idxR) .* 10.^(RS(idxR).*LF(idxR)/10);                            % --- allow for linear computational rule!!
+        tmpW2 = W1(idxR) .* 10.^(RS(idxR).*LF(idxR)/10);                            % <--- allow for linear computational rule!!
         tmpW1 = W2(idxL) .* 10.^(RS(idxL).*-LF(idxL)/10);
         tmpRS = 10*log10(W2(idxW)./W1(idxW)) ./ LF(idxW);
 
@@ -209,17 +226,30 @@ end
 
 %  ------------------------------------------------------------------------------------------------
 
-function T = splittable(T)
-    
-end
+
 
 %  ------------------------------------------------------------------------------------------------
 %{
-PSD =  [    20	        nan	        nan          +6	
-            50          nan         nan          0
-            800	        nan	        nan          nan
-            2000        0.026       +6	         nan        ];
-tablePSD(PSD)
+T = [     20	    nan	        nan          +6	
+          50        nan         nan          0
+         800	    nan	        nan          nan
+        2000        0.026       +6	         nan     ];
+tabC4(T)
+
+T = [     32          34         NaN         NaN
+          40          94         NaN         -inf
+          50          69         NaN         NaN
+          63          77         NaN         NaN
+          80          86        -Inf         NaN
+         100           0         NaN         NaN
+         125           0         NaN         NaN
+         125          10         NaN         NaN
+         160         108         NaN         Inf
+        1000           4         NaN         NaN
+        1600           1        -Inf         NaN
+        2000           1         NaN         Inf
+        2500           0         NaN         NaN    ];
+tabC4(T)
 %}
 
 

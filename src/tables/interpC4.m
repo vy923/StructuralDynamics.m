@@ -1,6 +1,6 @@
 %  ------------------------------------------------------------------------------------------------
 %   DESCRIPTION
-%       [W,T] = interpPSD(T,f)
+%       [W,T] = interpC4(T,f)
 %       Interpolates a PSD table given by T over frequency vector f 
 %
 %       See also:       tablePSD
@@ -15,7 +15,7 @@
 %       v1.0 / 14.10.22 / V.Yotov
 %  ------------------------------------------------------------------------------------------------
 
-function [W,T] = interpPSD(T,f)
+function [W,T] = interpC4(T,f)
 
 % Validate/complete T
     T = tablePSD(T);

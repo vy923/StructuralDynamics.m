@@ -1,6 +1,6 @@
 %  ------------------------------------------------------------------------------------------------
 %   DESCRIPTION
-%       T = scalePSD(T,opts)
+%       T = scaleC4(T,opts)
 %
 %       See also:       tablePSD, interpPSD, integratePSD
 %
@@ -16,7 +16,7 @@
 %       v1.0 / 16.10.22 / V.Yotov
 %  ------------------------------------------------------------------------------------------------
 
-function T = scalePSD(T,level,opts)
+function T = scaleC4(T,level,opts)
 
 arguments
     T
