@@ -15,18 +15,22 @@
 %   OUTPUTS
 %       B               remapped array of same number of dims as A
 %       idxO2N          forward  map idxs SO->SN: SO(idxO2N) == SN(sort(idxN2O))
-%       idxN2O          backward map idxs SN->SO: SN(idxN2O) == SO(sort(idxO2N))    
+%       idxN2O          backward map idxs SN->SO: SN(idxN2O) == SO(sort(idxO2N))
+%
+%   UPDATES
+%       - do operations on pre-initialised B, replace/add/multiply with A
 %
 %   VERSION
 %       v1.0 / 22.10.22 / V.Yotov
 %  ------------------------------------------------------------------------------------------------
 
-function [B,idxO2N,idxN2O] = mapSet(SO,SN,A,opts)
+function [B,idxO2N,idxN2O] = mapSet(SO,SN,A,B,opts)
 
 arguments
     SO {mustBeVector}
     SN {mustBeVector}
     A = []
+    B = []
     opts.dims {mustBeInteger,mustBePositive} = 1
 end
 if ~isempty(A)
@@ -46,7 +50,7 @@ end
         [cla,clb] = deal(repmat({':'},size(sz)));
         cla(opts.dims) = {idxO2N};
         clb(opts.dims) = {sort(idxN2O)};
-
+ 
         B = zeros(sz); 
         B(clb{:}) = A(cla{:});
     end

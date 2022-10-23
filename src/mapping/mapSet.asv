@@ -11,6 +11,7 @@
 %       A               array with at least one dim corresponding to SO
 %       opts{:}             
 %           dims        dims of A to be mapped to SN, default = 1
+%           B           initialised output array
 %
 %   OUTPUTS
 %       B               remapped array of same number of dims as A
@@ -27,6 +28,7 @@ arguments
     SO {mustBeVector}
     SN {mustBeVector}
     A = []
+    opts.B = []
     opts.dims {mustBeInteger,mustBePositive} = 1
 end
 if ~isempty(A)
@@ -47,7 +49,9 @@ end
         cla(opts.dims) = {idxO2N};
         clb(opts.dims) = {sort(idxN2O)};
 
-        B = zeros(sz); 
+        if isempty(opts.B) 
+            B = zeros(sz); 
+        end
         B(clb{:}) = A(cla{:});
     end
 
