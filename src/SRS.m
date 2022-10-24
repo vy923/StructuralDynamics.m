@@ -29,7 +29,7 @@
 %           ndof        total sample points, overrides nPerOct
 %
 %           xout        vector with output derivative orders, default = []
-%               [] 	    output variable X is empty
+%               []      output variable X is empty
 %               [0 1 2] compute x/xd/xdd e.g. [0 2] requests only x/xdd
 %
 %   EXT. CALLS
