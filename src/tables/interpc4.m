@@ -30,7 +30,7 @@ function [W,T] = interpc4(T,f)
     end
     
 % Recompute with new bands and interpolate
-    T = tablePSD(T);                                                                          
+    T = tabc4(T);                                                                          
     W = interp1(log(T(:,1)), log(T(:,2)), log(f), 'linear');
     W = exp(W);
 
@@ -50,8 +50,23 @@ T =  [  20          0.026
         925         0.06
         2000        0.02    ];
 
+T = [     20	    nan	        nan          +6	
+          50        nan         nan          0
+         250        .05         nan          nan
+         320        nan         nan          3
+         300        nan         nan          -4
+         350        nan         nan          3
+         380        nan         nan          3
+         400        0.100       nan          nan
+         500        nan         -1           nan
+         550        nan         -1           nan
+         590        nan         -1           nan
+         800	    nan	        nan          nan
+        2000        0.026       +6	         nan     ];
+
 f = [1:1:6200]';
-W = interpPSD(T,f);
+T = tabc4(T);
+W = interpc4(T,f);
 
 [ax,fig]=xfig(n=1,xy=1,b=1);
     plot(T(:,1),T(:,2),'-k',linewidth=3.2,color=col('k'))
@@ -68,8 +83,8 @@ T = [     20	        nan	        0            +6
           2000        0.026         +6	         nan        ];
 
 f = [4:.1:6200]';
-T = tablePSD(T,ls=-15,rs=-3);
-[W,Te] = interpPSD(T,f);
+T = tabc4(T,ls=-15,rs=-3);
+[W,Te] = interpc4(T,f);
 
 [ax,fig]=xfig(n=1,xy=1,b=1);
     plot(T(:,1),T(:,2),'-k',linewidth=3.2,color=col('k'))
