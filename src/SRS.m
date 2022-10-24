@@ -4,7 +4,7 @@
 %
 %       See also:       mustBeEqualDims, mustBeStartString, v2string, newmarkBeta     
 %       External:       v2struct
-%       Related:        forcedAcce1D
+%       Related:        squareWaveSRS
 %
 %   OUTPUTS
 %       S
@@ -36,7 +36,7 @@
 %       v2struct        unpack opts to workspace  
 %
 %   VERSION
-%       v1.3 / 27.06.22 / V.Yotov   updated argument validation
+%       v1.3 / 27.06.22 / --        updated argument validation
 %       v1.2 / 24.06.22 / V.Yotov
 %  ------------------------------------------------------------------------------------------------
 
