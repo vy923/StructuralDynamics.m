@@ -82,7 +82,7 @@ end
 
 % Direct completions 
     %timeit(@() autofill(T))
-    T = autofill(T, [0 Inf -1 10]);                                                 % Zero slopes -> Inf slopes -> LS-RS pairs -> const. W
+    T = autofill(T, [0 -Inf Inf -1 10]);                                             % Zero slopes -> Inf slopes -> LS-RS pairs -> const. W
 
 % Computation
     F1 = T(1:end-1,1);
@@ -129,6 +129,7 @@ end
         T(idxW(maskWR),4) = tmpRS(maskWR);
         T(idxW(maskWL)+1,3) = -tmpRS(maskWL);
 
+        T = autofill(T, [Inf -1]);                                                  % "aggressive" autofill for +/-Inf slopes
         maskBand(maskR|maskL|maskW) = false;
     end
 
@@ -144,7 +145,7 @@ end
     T(idx(T([1,end],2)==0)) = 0;                                                    % overwrites with zero if W == 0
 
 % Check completeness and clean-up
-    validate(T, [NaN, 1:5, -Inf, Inf]);
+    validate(T, [923, 1:5, -Inf, Inf]);
 
     %timeit(@() compress(T,opts.epstol))
     if opts.compress
@@ -189,13 +190,13 @@ function validate(T,flags)
 
     for f = flags
     switch f
-        case nan
+        case 923
             assert( ~any(isnan(T),'all'), ...
                     "tabc4: incomplete/ambiguous input" ) 
-        case -inf 
+        case -Inf 
             assert( ~any(T(:,3)==-Inf & T(:,2)==0), ...
                     "tabc4: zero PSD and -Inf slope" )
-        case inf
+        case Inf
             assert( ~any(T(:,4)==Inf & T(:,2)~=0 & ~isnan(T(:,2))), ...
                     "tabc4: nonzero PSD and +Inf slope" )
         case 1
@@ -242,8 +243,6 @@ function T = autofill(T,flags)
             T(band,4) = 0;
             T(band+1,3) = 0;
         case Inf                                                                        % +Inf slopes
-            W1 = T(1:end-1,2);
-            W2 = T(2:end,2);
             T(find(W1~=0 & W2==0 & ~isnan(W1)) + 1, 3) = Inf;
             T(find(W1==0 & W2~=0 & ~isnan(W2)), 4) = Inf;
         case 10                                                                         % Constant W 
@@ -254,7 +253,9 @@ function T = autofill(T,flags)
             idxR = find(mask(:,1));
             T(idxL,2) = T(idxL+1,2);
             T(idxR+1,2) = T(idxR,2);
-        case nan                                                                        % Computable NaNs from +/-Inf slopes
+            W1 = T(1:end-1,2);                                                          % Update on exiting this case
+            W2 = T(2:end,2);
+        case 923                                                                        % Computable NaNs from +/-Inf slopes
                                                                                         % < --------------------------------------
         otherwise
             continue
@@ -335,12 +336,12 @@ T = [     32          15        -Inf         NaN
         2500           4        -Inf        -Inf   ];
 tabc4(T)
 
-% Example 3, chained, non-sorted, compression
+% Example 3, chained, non-sorted, compression, zeros
 T = [     20	    nan	        nan          +6	
           50        nan         nan          0
-         250        .05         nan          nan
-         320        nan         nan          3
-         300        nan         nan          -4
+         250        .05         nan          7
+         310        nan         nan          nan   
+         320        0           nan          nan
          350        nan         nan          3
          380        nan         nan          3
          400        0.100       nan          nan
@@ -372,6 +373,20 @@ tabc4(tabc4(ans))
     T(idxL,2)   = tmpW1;
     T(idxW,4)   = tmpRS;
     T(idxW+1,3) = -tmpRS;
+
+T = [     20	    nan	        nan          +6	
+          50        nan         nan          0
+         250        .05         nan          nan
+         320        nan         nan          nan   
+         320        nan         nan          -4
+         350        nan         nan          3
+         380        nan         nan          3
+         400        0.100       nan          nan
+         500        nan         -1           nan
+         550        nan         -1           nan
+         590        nan         -1           nan
+         800	    nan	        nan          nan
+        2000        0.026       +6	         nan     ];
 %}
 
 
