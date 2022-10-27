@@ -1,7 +1,11 @@
-function b = symeq(v,w,tol) 
+function mask = symeq(v,w,tol) 
 
-    if nargin < 3
-        tol = 1e4;
-    end
-    
-    b = abs(v-w) < tol * max( eps(), eps(min(abs(v),abs(w))) );
+if nargin < 3
+    tol = 0;
+end
+
+if tol==0
+    mask = v==w;
+else
+    mask = abs(v-w) <= tol*max(eps(), eps(min(abs(v),abs(w))));
+end
