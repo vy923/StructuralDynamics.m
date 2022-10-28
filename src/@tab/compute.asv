@@ -1,9 +1,9 @@
 %  ------------------------------------------------------------------------------------------------
 %   DESCRIPTION
-%       T = tab.compute(T,opts)
+%       T = compute(T,opts)
 %
 %       See also:       autofill, symeq
-%       Related:        collapse, split, validate
+%       Related:        -- 
 %
 %   INPUTS
 %       T               [n x 4] array in the form of tab.val

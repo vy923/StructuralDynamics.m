@@ -1,3 +1,17 @@
+%  ------------------------------------------------------------------------------------------------
+%   DESCRIPTION
+%       ids = tab.getblocks(T,tol)
+%       Computes tab.block property from tab.val given by T, default tol = 0
+%
+%       See also: symeq
+%
+%   OUTPUTS
+%       [k x 2] array with with [start end] row indices of continuous blocks of T
+%
+%   VERSION
+%       v1.0 / 26.10.22 / V.Yotov
+%  ------------------------------------------------------------------------------------------------
+
 function ids = getblocks(T,tol)
 
 arguments

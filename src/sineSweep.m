@@ -71,7 +71,7 @@ function [y,t,f,R] = sineSweep(f0,f1,opts)
     arguments
         f0 (1,1) double
         f1 (1,1) double
-        opts.output {mustBeMember(opts.output,[-1:2])} = -1
+        opts.output {mustBeMember(opts.output,-1:2)} = -1
         opts.tmax {mustBeReal} = []
         opts.sweepRate (1,1) {mustBeReal} = 2
         opts.sampleRate (1,1) {mustBeInteger} = 20
@@ -82,45 +82,44 @@ function [y,t,f,R] = sineSweep(f0,f1,opts)
         opts.limCond (1,1) double = 0
         opts.phaseShift (1,1) double = 0
     end
-
-    v2struct(opts);                                                         % Legacy unpack: cellfun(@(n) assignin('caller',n,getfield(opts,n)),fieldnames(opts))
+    v2struct(opts);                                                                         % Legacy unpack: cellfun(@(n) assignin('caller',n,getfield(opts,n)),fieldnames(opts))
 
 % Parameters
-    r = sampleRate;                                                         % to simplify notation
-    oct = log(f1/f0)/log(2);                                                % number of octaves in sweep
-    phs = phaseShift;                                                       % phase shift in radians 
+    r = sampleRate;                                                                         % to simplify notation
+    oct = log(f1/f0)/log(2);                                                                % number of octaves in sweep
+    phs = phaseShift;                                                                       % phase shift in radians 
     
     if isempty(tmax)
-        tmax = oct/sweepRate*60;                                            % [s]
+        tmax = oct/sweepRate*60;                                                            % [s]
     else
-        sweepRate = oct/tmax*60;                                            % [oct/min]
+        sweepRate = oct/tmax*60;                                                            % [oct/min]
     end
 
-    lin = strcmp(sweepType,'lin');                                          % bool switch 
-	nRoffs = rampOffset*floor(rampCycles*r);                                % Additional sampling points if rampOffset==true
+    lin = strcmp(sweepType,'lin');                                                          % bool switch 
+	nRoffs = rampOffset*floor(rampCycles*r);                                                % Additional sampling points if rampOffset==true
 
 % Time points, frequencies, ramp function
     if lin       
         a    = 0.5*(f1-f0)/tmax;
         c 	 = pi*f0^2/2/a; 
-        phi  = @(t) 2*pi*(a*t.^2+f0*t);                                     % phase [rad]
-        ninv = @(x) (-f0*sqrt(r)+sqrt(4*a*x+r*f0^2))/(2*a*sqrt(r));         % inverse of cumulative number of samples function n(t)    
-        t	 = ninv([-nRoffs:r/(2*pi)*phi(tmax)])';                         % time point vector
-        f	 = (f1-f0)/tmax*t+f0;                                           % instantaneous frequency 
+        phi  = @(t) 2*pi*(a*t.^2+f0*t);                                                     % phase [rad]
+        ninv = @(x) (-f0*sqrt(r)+sqrt(4*a*x+r*f0^2))/(2*a*sqrt(r));                         % inverse of cumulative number of samples function n(t)    
+        t	 = ninv([-nRoffs:r/(2*pi)*phi(tmax)])';                                         % time point vector
+        f	 = (f1-f0)/tmax*t+f0;                                                           % instantaneous frequency 
 
-        f0   = f(1);                                                        % Updates f0/c/phi when rampOffset==true
+        f0   = f(1);                                                                        % Updates f0/c/phi when rampOffset==true
         c    = pi*f0^2/2/a; 
         phi  = @(t) 2*pi*(a*t.^2+f0*t) + phs;
     else
-        b	 = (f1/f0)^(1/tmax);                                            % exponent base
+        b	 = (f1/f0)^(1/tmax);                                                            % exponent base
         a    = 2*pi*f0/log(b);
         phi  = @(t) a*(b.^t-1);
         ninv = @(x) log(1+2*pi/a*x/r)/log(b);
         t	 = ninv([-nRoffs:r/(2*pi)*phi(tmax)])';
         f  	 = f0*b.^t;
         
-        a    = 2*pi*f(1)/log(b);                                            % Updates a/phi when rampOffset==true
-        phi  = @(t) a*(b.^t-1) + phs;                                       % add required phase shift
+        a    = 2*pi*f(1)/log(b);                                                            % Updates a/phi when rampOffset==true
+        phi  = @(t) a*(b.^t-1) + phs;                                                       % add required phase shift
     end 
 	
 % Check if requested ramp offset is possible
@@ -129,17 +128,17 @@ function [y,t,f,R] = sineSweep(f0,f1,opts)
     end
 
 % Clean-up time vector
-    t = t-t(1);                                                             % start time = 0, as it is negative if rampOffset==true
-	t(abs(t)<eps(1e2)|t<0) = 0;                                             % clear numerical zeros
-    nR = min(floor(rampCycles*r+1),numel(t));                               % ramp points, incl. 0 and tr
-    tr = t(nR);                                                             % ramp time
+    t = t-t(1);                                                                             % start time = 0, as it is negative if rampOffset==true
+	t(abs(t)<eps(1e2)|t<0) = 0;                                                             % clear numerical zeros
+    nR = min(floor(rampCycles*r+1),numel(t));                                               % ramp points, incl. 0 and tr
+    tr = t(nR);                                                                             % ramp time
 
 % Generate ramp function
     g  = smoothstep(rampOrder,tr);
     Rf = optAnon(@(x)g(x).*sin(phi(x)));
 
 % Ramp data, only for output  
-    R.gs = @(x) (x<tr).*g(x) + (x>=tr);                                     % Smoothstep extended to +inf  
+    R.gs = @(x) (x<tr).*g(x) + (x>=tr);                                                     % Smoothstep extended to +inf  
     R.tr = tr;
     R.nR = nR;
 
@@ -158,23 +157,23 @@ else
     else
         intA = @(t)( cos(a)*sinintx(a*b.^t) - sin(a)*cosintx(a*b.^t) ) / log(b);
     end                      
-    optq = {'reltol',1e-8,'MaxIntervalCount',1e6};                          % [quadgk] parameters
-    opti = {'reltol',eps(1e6)};                                             % [integral] parameters
+    optq = {'reltol',1e-8,'MaxIntervalCount',1e6};                                          % [quadgk] parameters
+    opti = {'reltol',eps(1e6)};                                                             % [integral] parameters
 
 % Boundary conditions
     h = msgbox(sprintf('Check for warnings, error bound << 1.0 is acceptable'), ...
         'BC parameter calc','warn');
     
-    w = @(x,k)-k.*sin(pi*x/tr).^2;                                          % offset function
+    w = @(x,k)-k.*sin(pi*x/tr).^2;                                                          % offset function
     
     if limCond == inf
-        cr  = intA(inf)-intA(tr);                                           % [tr,inf], sin(phi(x))
-        cl  = quadgk(Rf,0,tr,optq{:});                                      % [0,tr], g(x)*sin(phi(x))
-        k   = -(cr+cl)/quadgk(@(x)g(x).*w(x,1),0,tr,optq{:});               % Linear in k => cl + cr + k*int(g(x)*w(t,1)) = 0
+        cr  = intA(inf)-intA(tr);                                                           % [tr,inf], sin(phi(x))
+        cl  = quadgk(Rf,0,tr,optq{:});                                                      % [0,tr], g(x)*sin(phi(x))
+        k   = -(cr+cl)/quadgk(@(x)g(x).*w(x,1),0,tr,optq{:});                               % Linear in k => cl + cr + k*int(g(x)*w(t,1)) = 0
     else
-        tlim = t(end-rem(numel(t)-1,r/2));                                  % last accel. zero crossing
-        cr  = quadgk(@(x)(tlim-x).*Rf(x),0,tr,optq{:});                     % double/Cauchy [tr,inf], sin(phi(x)), 
-        cl  = quadgk(@(x)(tlim-x).*sin(phi(x)),tr,tlim,optq{:});            % double/Cauchy [0,tr], g(x)*sin(phi(x))
+        tlim = t(end-rem(numel(t)-1,r/2));                                                  % last accel. zero crossing
+        cr  = quadgk(@(x)(tlim-x).*Rf(x),0,tr,optq{:});                                     % double/Cauchy [tr,inf], sin(phi(x)), 
+        cl  = quadgk(@(x)(tlim-x).*sin(phi(x)),tr,tlim,optq{:});                            % double/Cauchy [0,tr], g(x)*sin(phi(x))
         k   = -(cr+cl)/quadgk(@(x)(tlim-x).*g(x).*w(x,1),0,tr,optq{:}); 
     end   
 
@@ -182,24 +181,26 @@ else
     RF = optAnon(@(x)g(x).*(sin(phi(x))+optAnon(@(x)w(x,k))));
 
 % Definite integrals
-    c1 = quadgk(RF,0,tr,optq{:}) - intA(tr);                                % As intA1(tr) = v(tr) = intA1L(tr) + c1
+    c1 = quadgk(RF,0,tr,optq{:}) - intA(tr);                                                % As intA1(tr) = v(tr) = intA1L(tr) + c1
     intA1 = @(t)intA(t) + c1;
     
-    c2 = quadgk(@(x)(tr-x).*RF(x),0,tr,optq{:});                            % contribution from int(sin(phi(t))-RF(t))
+    c2 = quadgk(@(x)(tr-x).*RF(x),0,tr,optq{:});                                            % contribution from int(sin(phi(t))-RF(t))
     if lin
         c2 = c2 - (cos(2*pi*(a*tr.^2+f0*tr))/(4*pi*a)+(tr+f0/2/a).*intA1(tr));  
         intA2 = @(t)(cos(2*pi*(a*t.^2+f0*t))/(4*pi*a)+(t+f0/2/a).*intA1(t)) + c2;
     else
-        intA2 = @(t) intN1(intA1,t,5*r,opti{:}) + c2;                       % Correct if t(1)==t(nR) as intN1 computes F(t(:))-F(t(1))
+        intA2 = @(t) intN1(intA1,t,5*r,opti{:}) + c2;                                       % Correct if t(1)==t(nR) as intN1 computes F(t(:))-F(t(1))
     end
 
 % Compute outputs
     y = zeros(length(t),3);
 	y(:,1) = [RF(t(1:nR-1)); sin(phi(t(nR:end))) ];
-if ismember(1,output)
-	y(:,2) = [intN1(RF,t(1:nR-1),5*r,opti{:}); intA1(t(nR:end)) ];  end
-if ismember(2,output)
-	y(:,3) = [intN2(RF,t(1:nR-1),opti{:}); intA2(t(nR:end)) ];      end
+    if ismember(1,output)
+	    y(:,2) = [intN1(RF,t(1:nR-1),5*r,opti{:}); intA1(t(nR:end)) ];  
+    end
+    if ismember(2,output)
+	    y(:,3) = [intN2(RF,t(1:nR-1),opti{:}); intA2(t(nR:end)) ];      
+    end
     
 end % if ismember(-1,out)
 
@@ -232,21 +233,21 @@ end
 % [0,xmax] for numeric and [0,t] for symbolic handles g and s
 function [g,s] = smoothstep(n,xmax)
     syms s(x,t)
-    if xmax == 0                                                            % no ramping
+    if xmax == 0                                                                            % no ramping
         g = @(x)1.;
         return
-    elseif n < 0                                                            % sinusoid
+    elseif n < 0                                                                            % sinusoid
         s(x,t) = sym(@(x,t)sin(.5*pi*x./t).^2);
-    else                                                                    % polynomial
+    else                                                                                    % polynomial
         k = arrayfun(@(k)(-1)^k*nchoosek(n+k,k)*nchoosek(2*n+1,n-k),[0:n]);
         s(x,t) = sym(@(x,t)sum(k.*(x/t).^(n+1+[0:n])));
     end
-	g = matlabFunction(s(x,xmax));                                          % numeric function g(x)
+	g = matlabFunction(s(x,xmax));                                                          % numeric function g(x)
 end
 
 % Vectorised integration with array limits T0, T1 
 function y = intArr(fun,T0,T1,varargin)
-    f = @(x)fun((T1-T0).*x+T0);                                             % maps all inervals [T0,T1] to [0,1]
+    f = @(x)fun((T1-T0).*x+T0);                                                             % maps all inervals [T0,T1] to [0,1]
     y = (T1-T0).*integral(f,0,1,'ArrayValued',1,varargin{:});
 end
 
@@ -258,9 +259,9 @@ function y = intN1(fun,t,r,varargin)
     m = '[%.0f/%.0f] blocks';
 	h = waitbar(0,sprintf(m,0,n/r),'name','Integrating...');   
 	for i = 1:ceil((n-1)/r)
-        k = (i-1)*r+1;                                                      % i-th block start index
+        k = (i-1)*r+1;                                                                      % i-th block start index
         s = min(r,n-k);  
-        y(k+1:k+s) = y(k) + intArr(fun,t(k),t(k+1:k+s),varargin{:});        % accumulate integral for i-th block
+        y(k+1:k+s) = y(k) + intArr(fun,t(k),t(k+1:k+s),varargin{:});                        % accumulate integral for i-th block
         if rem(i,ceil((n-1)/r/25))==0
             waitbar(i/ceil(n/r),h,sprintf(m,i,n/r))
         end

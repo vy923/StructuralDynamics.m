@@ -1,24 +1,23 @@
 %  ------------------------------------------------------------------------------------------------
 %   DESCRIPTION
-%       T = tab.autofill(T,flags,opts)
+%       T = autofill(T,flags,opts)
 %
-%       See also:       --
-%       Related:        compute, split, validate, collapse
+%       See also:       mapSet, mustBeMemberSCI
+%       Related:        interp1, 
 %
 %   INPUTS
-%       T               [n x 4] in the form of tab.val
-%       flags           [k x 1] flags what values to fill, default = [0 Inf -1 10]
-%           -1          left-right slope pairs
-%           0           zero slopes from constant Y
-%           inf         +Inf slopes
-%           10          constant Y from 0 slopes
-%           99          extrapolation slopes
+%       T               [n x 4] mat in the form of tab.val
+%       flags           [k x 1] flags which values to fill, default = [0 Inf -1 10]
+%           -1
+%            0
+%           inf
 %
 %       opts{:}
-%           sl          [2 x 1] with extrapolation [LS RS], default = [NaN NaN]
+%           sl          [2 x 1] vec with extrapolation [LS RS], default = [NaN NaN]
+%
 %
 %   OUTPUTS
-%       T               [n x 4] with filled values according to 'flags'
+%       T               [n x 4] mat with filled values according to 'flags'
 %
 %   VERSION
 %       v1.0 / 26.10.22 / V.Yotov
@@ -67,7 +66,7 @@ switch f
             idxR = find(mask(:,1));
             T(idxL,2) = T(idxL+1,2);
             T(idxR+1,2) = T(idxR,2);
-            Y1 = T(1:end-1,2);                                                      % update preallocated Y1/Y2 on exiting case 10
+            Y1 = T(1:end-1,2);                                                      % Update on exiting this case
             Y2 = T(2:end,2);
         end
     case 99

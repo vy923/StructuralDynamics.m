@@ -3,8 +3,8 @@
 %       tb = tab(T,opts)
 %
 %       Constructor for the tab class
-%       Objects hold a piecewise linear representation of a function in the form [X Y LS RS], where 
-%       LS and RS are the left and right slopes at points [X Y]
+%       Objects hold a piecewise linear representation of function as a piecewise set [X Y LS RS] with LS and RS
+%       being the left and right 
 %
 %       See also:       mapSet, mustBeMemberSCI
 %       Static:         split, autofill, compute, collapse, getblocks, validate, symeq
@@ -27,7 +27,7 @@
 %           collapse    default = true
 %               true    removes redundant points
 %               false   allows redundant points, e.g. midpoint of constant band
-%
+
 %           epstol      eps tolerance scaling for comparisons, default = 1E+4  
 %           ls          left slope of first block
 %           rs          right slope of final block
@@ -36,12 +36,12 @@
 %       tb              object of the class
 %
 %   UPDATES
+%       + update help file
 %       - merge function with min/max options for adding profiles, etc.
-%       - inerp1 -> addpoints -> integral
 %
 %   VERSION
 %       v2.0 / 26.10.22 / --        redefined as 'tab' class, updated methods for the constructor
-%       v1.2 / 23.10.22 / --        handling of discontinuities i.e. zero Y, +/-Inf slopes 
+%       v1.2 / 23.10.22 / --        handling of zero Y, +/-inf slopes, discontinuities
 %       v1.1 / 16.10.22 / --        epstol, extrapolation slopes for end blocks
 %       v1.0 / 14.10.22 / V.Yotov
 %  ------------------------------------------------------------------------------------------------
