@@ -43,17 +43,18 @@ end
     [~,~,idxO2N] = intersect(SN,SO,'stable');
     
 % Remap A if nonempty
-    if flag
-        sz = size(A);
-        sz(opts.dims) = length(SN);
-        
-        [cla,clb] = deal(repmat({':'},size(sz)));
-        cla(opts.dims) = {idxO2N};
-        clb(opts.dims) = {sort(idxN2O)};
- 
-        B = zeros(sz); 
-        B(clb{:}) = A(cla{:});
-    end
+if flag
+    sz = size(A);
+    sz(opts.dims) = length(SN);
+    
+    cla = repmat({':'},size(sz));
+    clb = cla;
+    cla(opts.dims) = {idxO2N};
+    clb(opts.dims) = {sort(idxN2O)};
+
+    B = zeros(sz); 
+    B(clb{:}) = A(cla{:});
+end
 
 
 %  ------------------------------------------------------------------------------------------------

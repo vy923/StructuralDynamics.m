@@ -46,6 +46,7 @@ switch f
             T(idxL-1,4) = -T(idxL,3);
             T(idxR+1,3) = -T(idxR,4);
         end
+
     case 0     
         % Zero slopes
         idx = find(Y2==Y1);
@@ -53,10 +54,12 @@ switch f
             T(idx,4) = 0;
             T(idx+1,3) = 0;
         end
+
     case Inf     
         % +Inf slopes
         T([false; Y1~=0 & Y2==0 & ~isnan(Y1)], 3) = Inf;
         T(Y1==0 & Y2~=0 & ~isnan(Y2), 4) = Inf;
+
     case 10 
         % Constant Y                                                                         
         maskNB = isnan([Y2 Y1]);   
@@ -70,6 +73,7 @@ switch f
             Y1 = T(1:end-1,2);                                                      % update preallocated Y1/Y2 on exiting case 10
             Y2 = T(2:end,2);
         end
+
     case 99
         % Extrapolation slopes
         idx = size(T,1)*[2 4] + [1 0];                                              % extrap slope indices
@@ -79,6 +83,7 @@ switch f
         T(idx(ixl)) = opts.sl(ixl);                                                 % non-NaN slopes specified in optional arguments
         T(idx(ixn & ~ixl)) = -T(ids(ixn & ~ixl));                                   % defaults to end block slope
         T(idx(T([1,end],2)==0)) = 0;                                                % overwrites with zero if Y == 0
+
     otherwise
         continue
 end

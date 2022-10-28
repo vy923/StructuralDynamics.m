@@ -32,27 +32,27 @@ while any(maskBlock)
     Y1 = T(1:end-1,2);
     Y2 = T(2:end,2);
 
-    % exclude singularities from explicit computation
+    % Exclude singularities from explicit computation
     maskBlock( isinf(RS) | isinf(LS) | Y1.*Y2==0 ) = false;                            
 
-    % fields computable from current data, may overlap
+    % Fields computable from current data, may overlap
     maskR = ~isnan(Y1 + RS) & maskBlock;                                         
     maskL = ~isnan(LS + Y2) & maskBlock;
     maskY = ~isnan(Y1 + Y2) & maskBlock;
 
-    % prevent infinite loops
+    % Prevent infinite loops
     assert(any( maskR | maskL | maskY ));                                             
 
     idxR = find(maskR);
     idxL = find(maskL);
     idxY = find(maskY);
 
-    % compute, incl. with overlapping methods
+    % Compute, incl. with overlapping methods
     tmpY2 = Y1(idxR) .* 10.^(RS(idxR).*logX(idxR)/10);                          % <--- allow for other computational rules in next versions
     tmpY1 = Y2(idxL) .* 10.^(RS(idxL).*-logX(idxL)/10);
     tmpRS = 10*log10(Y2(idxY)./Y1(idxY)) ./ logX(idxY);
 
-    % verify that different comp. methods give consistent results
+    % Verify that different comp. methods give consistent results
     assert( all([
             tab.symeq(Y2(maskR & ~isnan(Y2.*maskR)), tmpY2(~isnan(Y2(maskR))), opts.epstol)
             tab.symeq(Y1(maskL & ~isnan(Y1.*maskL)), tmpY1(~isnan(Y1(maskL))), opts.epstol)
@@ -60,7 +60,7 @@ while any(maskBlock)
             ]), ...
         "tab: overspecified input");
 
-    % do not overwrite existing non-NaN fields
+    % Do not overwrite existing non-NaN fields
     maskRS = isnan(T(idxR+1,2));
     maskLS = isnan(T(idxL,2));
     maskYR = isnan(T(idxY,4)); 
@@ -74,7 +74,7 @@ while any(maskBlock)
     % "aggressive" autofill for +/-Inf slopes
     T = tab.autofill(T, [Inf -1]);  
 
-    % discard checked entries from next iteration
+    % Discard checked entries from next iteration
     maskBlock( maskR | maskL | maskY ) = false;
 end
 

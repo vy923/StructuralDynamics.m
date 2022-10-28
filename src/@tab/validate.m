@@ -26,7 +26,7 @@
 function validate(T,flags)
 
 if nargin < 2
-    flags = [1:5];
+    flags = 1:5;
 end
 
 if any(~isinf(flags))

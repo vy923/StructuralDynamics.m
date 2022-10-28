@@ -373,20 +373,6 @@ tabc4(tabc4(ans))
     T(idxL,2)   = tmpW1;
     T(idxW,4)   = tmpRS;
     T(idxW+1,3) = -tmpRS;
-
-T = [     20	    nan	        nan          +6	
-          50        nan         nan          0
-         250        .05         nan          nan
-         320        nan         nan          nan   
-         320        nan         nan          -4
-         350        nan         nan          3
-         380        nan         nan          3
-         400        0.100       nan          nan
-         500        nan         -1           nan
-         550        nan         -1           nan
-         590        nan         -1           nan
-         800	    nan	        nan          nan
-        2000        0.026       +6	         nan     ];
 %}
 
 

@@ -33,7 +33,7 @@
 %           rs          right slope of final block
 %
 %   OUTPUTS
-%       tb              object of the class
+%       tb              initialised object
 %
 %   UPDATES
 %       - merge function with min/max options for adding profiles, etc.
@@ -53,9 +53,9 @@ properties
     block
 end
 
-methods 
+methods    
     % CONSTRUCTOR
-    function tb = tab(T,opts)    
+    function tb = tab(T,opts) 
         arguments
             T
             opts.type {mustBeMemberSCI(opts.type,"PSD")} = "PSD"
@@ -71,15 +71,16 @@ methods
             case 2; T = [T T*NaN];
             case 3; T = [T(:,1:2) T(:,3)+[NaN 0]]; 
             case 4 
-            otherwise, error("tab: table must have 2 to 4 columns")
+            otherwise; error("tab: table must have 2 to 4 columns")
         end
         
         if ~issorted(T(:,1))
-            h = msgbox(sprintf(['First column of input was not sorted. \nCorrect results ' ...
-                'are not guaranteed in case of discontinuous tables.']), 'tab', 'warn');
+            warning(['tab: first column of input was not sorted. Correct results ' ...
+                'are not guaranteed in case of discontinuous tables.'], 'tab', 'warn');
             T = sortrows(T);
         end
-    
+        
+
         % Check / split / check / autofill / compute fields
         tab.validate(T, [-Inf Inf]);
         if opts.split
@@ -89,16 +90,16 @@ methods
         T = tab.autofill(T, [0 -Inf Inf -1 10]);                                        % Zero slopes -> Inf slopes -> LS-RS pairs -> const. Y
         T = tab.compute(T, opts);
     
-        % Fill extrapolation slopes
+        % fill extrapolation slopes
         T = tab.autofill(T, 99, sl=[opts.ls opts.rs]);
     
-        % Check completeness and clean-up
+        % check completeness and clean-up
         tab.validate(T, [923, 1:5, -Inf, Inf]);
         if opts.collapse
             T = tab.collapse(T, tol=opts.epstol);
         end
 
-        % Create object
+        % create object
         tb.val = T;
         tb.block = tab.getblocks(T, opts.epstol);
     end
@@ -133,21 +134,21 @@ T = [     20	    nan	        nan          +6
 tab(T); disp(ans.val)
 
 % Example 2, discontinuous
-T = [     32          15        -Inf         NaN
-          40          94         NaN        -Inf
-          50          69         NaN         NaN
-          55          77         NaN         NaN
-          63           0         0           NaN
-          80          86        -Inf         NaN
-          80           0         NaN         NaN
-         100           0         NaN         NaN
+T = [     32          15        -Inf         nan
+          40          94         nan        -Inf
+          50          69         nan         nan
+          55          77         nan         nan
+          63           0         0           nan
+          80          86        -Inf         nan
+          80           0         nan         nan
+         100           0         nan         nan
          125           0         0           Inf
-         125          10         NaN         NaN
-         160         108         NaN         NaN
-         400           0         NaN         NaN
-        1000           4         NaN         NaN
-        1600           1        -Inf         NaN
-        2000           1         NaN         NaN
+         125          10         nan         nan
+         160         108         nan         nan
+         400           0         nan         nan
+        1000           4         nan         nan
+        1600           1        -Inf         nan
+        2000           1         nan         nan
         2500           4        -Inf        -Inf   ];
 tab(T); disp(ans.val)
 
@@ -159,7 +160,7 @@ T = [     20	    nan	        nan          +6
          320        0           nan          nan
          350        nan         nan          3
          380        nan         nan          3
-         400        0.100       nan          nan
+         400        0.1         nan          nan
          500        nan         -1           nan
          550        nan         -1           nan
          590        nan         -1           nan

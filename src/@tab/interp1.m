@@ -1,33 +1,34 @@
-function Y = interp1(T,f)
+function Y = interp1(T,xq)
 
-arguments 
-    T
-    f
-end
+Y = nan(size(xq));
+b = T.block;
 
-% Preallocate
-    Y = nan(size(f));
-    b = T.block;
+% Sort query array
+xq = rand(3,3,2);
+[xs,idxQ2S] = sort(xq(:));
+[~,idxS2Q] = sort(idxQ2S);
 
-% End blocks
-    
+% test mapping
+reshape(xs(idxS2Q),size(xq)) - xq
 
-
-    % idxb = 
-    % fb = f()
+% Get faster intersections
 
 
-for i = 2:size(b,1)-1
-    
 
-    
-    if b(i,1)==b(i,2)
-        
+
+
+for i = 1:size(b,1)
+    if i==1
+        mask = T.val(b(i,2)) <= xq;
+    elseif i==size(b,1)
+        mask = T.val(b(i,1)) >= xq;
     else
-        
+        mask = T.val(b(i,1)) <= xq & xq <= T.val(b(i,2)); % OK for mid bands...
     end
+    Qi = T.val(b(i,1):b(i,2), :);
+    Yi = interp1(log(Qi(:,1)), log(Qi(:,2)), log(xq(mask)), 'linear', 'extrap');
+    Y(mask) = exp(Yi);
 end
-
 
 
 %{
@@ -59,6 +60,18 @@ T =  [  20          0.026
         800         0.06
         925         0.06
         2000        0.02    ];
+
+f = [1:1:6200]';
+T = tab(T);
+W = interp1(T,f);
+
+[ax,fig]=xfig(n=1,xy=1,b=1);
+    plot(T.val(:,1),T.val(:,2),'-k',linewidth=3.2,color=col('k'))
+    plot(f,W,linewidth=1.2,color=col('coolgrey'),linestyle='--')
+
+    ax.XLimitMethod = 'padded';
+    legend("Table","Interpolated")
+
 
 T = [     20	    nan	        nan          +6	
           50        nan         nan          0
