@@ -1,5 +1,3 @@
 
-src/@tab/tab.asv
-src/@tab/validate.asv
-src/@tab/split.asv
-src/@tab/autofill.asv
+src/tables*
+*.asv
