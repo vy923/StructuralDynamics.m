@@ -1,3 +1,4 @@
+function S = SRS(xddb,dt,opts)
 %  ------------------------------------------------------------------------------------------------
 %   DESCRIPTION
 %       S = SRS(xddb,dt,opts)
@@ -40,25 +41,23 @@
 %       v1.2 / 24.06.22 / V.Yotov
 %  ------------------------------------------------------------------------------------------------
 
-function S = SRS(xddb,dt,opts)
+arguments
+    xddb (:,:) {mustBeReal}
+    dt (1,1) {mustBePositive}
+    opts.f0 (1,1) {mustBePositive} = 100
+    opts.f1 (1,1) {mustBePositive} = 10000
+    opts.zeta (1,1) {mustBePositive} = 0.05
+    opts.noct (1,1) {mustBeInteger,mustBePositive} = 25
+    opts.ndof (1,1) {mustBeInteger,mustBePositive}
+    opts.t (:,1) {mustBeReal,mustBeEqualDims(opts.t,xddb,1)}
+    opts.methInterp {mustBeMember(opts.methInterp,["linear","spline","makima"])} = 'linear'
+    opts.methSRS {mustBeStartString(opts.methSRS,["acceleration","velocity","displacement"])} = 'acc'
+    opts.signSRS {mustBeStartString(opts.signSRS,["positive","negative","absolute"])} = 'abs'
+    opts.xout {mustBeMember(opts.xout,[0:2])} = []
+end
 
-    arguments
-        xddb (:,:) {mustBeReal}
-        dt (1,1) {mustBePositive}
-        opts.f0 (1,1) {mustBePositive} = 100
-        opts.f1 (1,1) {mustBePositive} = 10000
-        opts.zeta (1,1) {mustBePositive} = 0.05
-        opts.noct (1,1) {mustBeInteger,mustBePositive} = 25
-        opts.ndof (1,1) {mustBeInteger,mustBePositive}
-        opts.t (:,1) {mustBeReal,mustBeEqualDims(opts.t,xddb,1)}
-        opts.methInterp {mustBeMember(opts.methInterp,["linear","spline","makima"])} = 'linear'
-        opts.methSRS {mustBeStartString(opts.methSRS,["acceleration","velocity","displacement"])} = 'acc'
-        opts.signSRS {mustBeStartString(opts.signSRS,["positive","negative","absolute"])} = 'abs'
-        opts.xout {mustBeMember(opts.xout,[0:2])} = []
-    end
-
-    v2struct(opts);                                                                             % Alternative: cellfun(@(n) assignin('caller',n,getfield(opts,n)),fieldnames(opts))
-    v2string(methInterp,methSRS,signSRS);                                                       % convert class of arguments to string
+v2struct(opts);                                                                                 % Alternative: cellfun(@(n) assignin('caller',n,getfield(opts,n)),fieldnames(opts))
+v2string(methInterp,methSRS,signSRS);                                                           % convert class of arguments to string
 
 % Sampling points  
     if ~exist('ndof','var')

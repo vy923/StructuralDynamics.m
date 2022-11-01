@@ -1,3 +1,4 @@
+function [y,t,f,R] = sineSweep(f0,f1,opts)
 %  ------------------------------------------------------------------------------------------------
 %   DESCRIPTION
 %       [y,t,f,R] = sineSweep(f0,f1,opts)
@@ -66,23 +67,21 @@
 %       v2.0 / 01.03.22 / V.Yotov
 %  ------------------------------------------------------------------------------------------------
 
-function [y,t,f,R] = sineSweep(f0,f1,opts)
-
-    arguments
-        f0 (1,1) double
-        f1 (1,1) double
-        opts.output {mustBeMember(opts.output,-1:2)} = -1
-        opts.tmax {mustBeReal} = []
-        opts.sweepRate (1,1) {mustBeReal} = 2
-        opts.sampleRate (1,1) {mustBeInteger} = 20
-        opts.sweepType {mustBeMember(opts.sweepType,{'lin','log'})} = 'log'
-        opts.rampOffset {mustBeMember(opts.rampOffset,[0 1])} = false
-        opts.rampCycles (1,1) {mustBeReal} = 0
-        opts.rampOrder {mustBeInteger} = -1
-        opts.limCond (1,1) double = 0
-        opts.phaseShift (1,1) double = 0
-    end
-    v2struct(opts);                                                                         % Legacy unpack: cellfun(@(n) assignin('caller',n,getfield(opts,n)),fieldnames(opts))
+arguments
+    f0 (1,1) double
+    f1 (1,1) double
+    opts.output {mustBeMember(opts.output,-1:2)} = -1
+    opts.tmax {mustBeReal} = []
+    opts.sweepRate (1,1) {mustBeReal} = 2
+    opts.sampleRate (1,1) {mustBeInteger} = 20
+    opts.sweepType {mustBeMember(opts.sweepType,{'lin','log'})} = 'log'
+    opts.rampOffset {mustBeMember(opts.rampOffset,[0 1])} = false
+    opts.rampCycles (1,1) {mustBeReal} = 0
+    opts.rampOrder {mustBeInteger} = -1
+    opts.limCond (1,1) double = 0
+    opts.phaseShift (1,1) double = 0
+end
+v2struct(opts);                                                                             % Legacy unpack: cellfun(@(n) assignin('caller',n,getfield(opts,n)),fieldnames(opts))
 
 % Parameters
     r = sampleRate;                                                                         % to simplify notation

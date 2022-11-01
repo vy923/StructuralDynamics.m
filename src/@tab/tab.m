@@ -1,13 +1,14 @@
+classdef tab
 %  ------------------------------------------------------------------------------------------------
 %   DESCRIPTION
-%       tb = tab(T,opts)
+%       tb = <strong>tab</strong>(T,opts)
 %
 %       Constructor for the tab class
 %       Objects hold a piecewise linear representation of a function in the form [X Y LS RS], where 
 %       LS and RS are the left and right slopes at points [X Y]
 %
-%       See also:       mapSet, mustBeMemberSCI
-%       Static:         split, autofill, compute, collapse, getblocks, validate, symeq
+%       See also:       isapprox, mustBeMemberSCI
+%       Static:         split, autofill, compute, collapse, getblocks, validate
 %       Overloads:      interp1
 %
 %   INPUTS
@@ -28,7 +29,7 @@
 %               true    removes redundant points
 %               false   allows redundant points, e.g. midpoint of constant band
 %
-%           epstol      eps tolerance scaling for comparisons, default = 1E+4  
+%           atol        absolute tolerance for comparisons, default = 0, reltol = sqrt(eps)
 %           ls          left slope of first block
 %           rs          right slope of final block
 %
@@ -38,6 +39,8 @@
 %   UPDATES
 %       - merge function with min/max options for adding profiles, etc.
 %       - inerp1 -> addpoints -> integral
+%       - add opts.rtol?
+%       - pass options directly to all methods
 %
 %   VERSION
 %       v2.0 / 26.10.22 / --        redefined as 'tab' class, updated methods for the constructor
@@ -45,8 +48,6 @@
 %       v1.1 / 16.10.22 / --        epstol, extrapolation slopes for end blocks
 %       v1.0 / 14.10.22 / V.Yotov
 %  ------------------------------------------------------------------------------------------------
-
-classdef tab
 
 properties
     val
@@ -61,7 +62,7 @@ methods
             opts.type {mustBeMemberSCI(opts.type,"PSD")} = "PSD"
             opts.split (1,1) {mustBeMember(opts.split,[0 1])} = true
             opts.collapse (1,1) {mustBeMember(opts.collapse,[0 1])} = true
-            opts.epstol (1,1) {mustBePositive} = 1E+4
+            opts.atol (1,1) {mustBeNonnegative} = 0
             opts.ls (1,1) {mustBeReal} = NaN
             opts.rs (1,1) {mustBeReal} = NaN
         end
@@ -80,13 +81,12 @@ methods
             T = sortrows(T);
         end
         
-
         % Check / split / check / autofill / compute fields
         tab.validate(T, [-Inf Inf]);
         if opts.split
             T = tab.split(T);
         end
-        tab.validate(T, [1:5]);
+        tab.validate(T, 1:5);
         T = tab.autofill(T, [0 -Inf Inf -1 10]);                                        % Zero slopes -> Inf slopes -> LS-RS pairs -> const. Y
         T = tab.compute(T, opts);
     
@@ -96,12 +96,12 @@ methods
         % check completeness and clean-up
         tab.validate(T, [923, 1:5, -Inf, Inf]);
         if opts.collapse
-            T = tab.collapse(T, tol=opts.epstol);
+            T = tab.collapse(T, atol=opts.atol);
         end
 
         % create object
         tb.val = T;
-        tb.block = tab.getblocks(T, opts.epstol);
+        tb.block = tab.getblocks(T, opts.atol);
     end
 
     % OVERLOADS
@@ -115,10 +115,7 @@ methods(Static)
     T = compute(T,opts)
     T = collapse(T,opts)
     ids = getblocks(T,tol)
-    validate(T,flags)   
-    
-    % UTILITY
-    mask = symeq(v,w,tol)
+    validate(T,flags)
 end
 
 end % CLASSDEF

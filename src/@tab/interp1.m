@@ -1,15 +1,21 @@
 function Y = interp1(T,xq)
 
+
+
+
+% xq = rand(3,3,2);
+% Flatten and sort query array for faster search
+if ~isvector(xq) && ~issorted(xq)
+    [xs,idxQ2S] = sort(xq(:));
+    [~,idxS2Q] = sort(idxQ2S);
+end
+% reshape(xs(idxS2Q),size(xq)) - xq
+
 Y = nan(size(xq));
 b = T.block;
 
-% Sort query array
-xq = rand(3,3,2);
-[xs,idxQ2S] = sort(xq(:));
-[~,idxS2Q] = sort(idxQ2S);
+% Sort query array to perform faster intersections with binary search
 
-% test mapping
-reshape(xs(idxS2Q),size(xq)) - xq
 
 % Get faster intersections
 

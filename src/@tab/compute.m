@@ -1,8 +1,9 @@
+function T = compute(T,opts)
 %  ------------------------------------------------------------------------------------------------
 %   DESCRIPTION
 %       T = tab.compute(T,opts)
 %
-%       See also:       autofill, symeq
+%       See also:       autofill, isapprox
 %       Related:        collapse, split, validate
 %
 %   INPUTS
@@ -15,8 +16,6 @@
 %   VERSION
 %       v1.0 / 26.10.22 / V.Yotov
 %  ------------------------------------------------------------------------------------------------
-
-function T = compute(T,opts)
 
 X1 = T(1:end-1,1);
 X2 = T(2:end,1);
@@ -54,9 +53,9 @@ while any(maskBlock)
 
     % Verify that different comp. methods give consistent results
     assert( all([
-            tab.symeq(Y2(maskR & ~isnan(Y2.*maskR)), tmpY2(~isnan(Y2(maskR))), opts.epstol)
-            tab.symeq(Y1(maskL & ~isnan(Y1.*maskL)), tmpY1(~isnan(Y1(maskL))), opts.epstol)
-            tab.symeq(RS(maskY & ~isnan(RS.*maskY)), tmpRS(~isnan(RS(maskY))), opts.epstol)
+            isapprox(Y2(maskR & ~isnan(Y2.*maskR)), tmpY2(~isnan(Y2(maskR))), opts.atol)
+            isapprox(Y1(maskL & ~isnan(Y1.*maskL)), tmpY1(~isnan(Y1(maskL))), opts.atol)
+            isapprox(RS(maskY & ~isnan(RS.*maskY)), tmpRS(~isnan(RS(maskY))), opts.atol)
             ]), ...
         "tab: overspecified input");
 

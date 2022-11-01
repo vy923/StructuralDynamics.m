@@ -1,3 +1,4 @@
+function [x,xd,xdd] = newmarkBeta(M,C,K,f,dt,beta,gamma,x0)
 %  ------------------------------------------------------------------------------------------------
 %   DESCRIPTION
 %       [x,xd,xdd] = newmarkBeta(M,C,K,f,dt,beta,gamma,x0)
@@ -18,8 +19,7 @@
 %       v1.1 / 23.06.22 / V.Yotov
 %  ------------------------------------------------------------------------------------------------
 
-function [x,xd,xdd] = newmarkBeta(M,C,K,f,dt,beta,gamma,x0)
-
+% Constants
 a0 = 1/(beta*dt^2);
 a1 = gamma/(beta*dt);
 a2 = 1/(beta*dt);
@@ -31,14 +31,17 @@ a7 = gamma*dt;
 
 Khat = K + a0*M + a1*C;
 
+% Preallocation
 N   = length(M);
 nt  = size(f,2);
 x   = zeros(N,nt);
 xd  = zeros(N,nt);
 xdd = zeros(N,nt);
 
+% Initialise solution
 x(:,1) = x0;
 
+% Integration
 if isvector(K) 
     % diagonal M, C, K given as vecotrs
     for i = 1:nt-1

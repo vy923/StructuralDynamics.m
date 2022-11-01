@@ -1,17 +1,16 @@
+function T = split(T)
 %  ------------------------------------------------------------------------------------------------
 %   DESCRIPTION
 %       T = tab.split(T)
 %       Adds rows to tab.val given by T such that discontinuities are properly represented  
 %
-%       See also:       mapSet
+%       See also:       --
 %       Related:        collapse, autofill, compute, validate
 %
 %   VERSION
-%       v1.1 / 28.10.22 / --        + performance, verbose replacements for mapSet and setdiff 
+%       v1.1 / 28.10.22 / --        better performance, verbose replacements for mapSet/setdiff 
 %       v1.0 / 26.10.22 / V.Yotov
 %  ------------------------------------------------------------------------------------------------
-
-function T = split(T)
    
 % Compute until no change in nrows of T occurs
 lvar = 0;

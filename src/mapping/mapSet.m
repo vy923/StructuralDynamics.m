@@ -1,3 +1,4 @@
+function [B,idxO2N,idxN2O] = mapSet(SO,SN,A,B,opts)
 %  ------------------------------------------------------------------------------------------------
 %   DESCRIPTION
 %       [B,idxO2N,idxN2O] = mapSet(SO,SN,A,opts)
@@ -24,8 +25,6 @@
 %       v1.0 / 22.10.22 / V.Yotov
 %  ------------------------------------------------------------------------------------------------
 
-function [B,idxO2N,idxN2O] = mapSet(SO,SN,A,B,opts)
-
 arguments
     SO {mustBeVector}
     SN {mustBeVector}
@@ -33,6 +32,7 @@ arguments
     B = []
     opts.dims {mustBeInteger,mustBePositive} = 1
 end
+
 if ~isempty(A)
     mustBeOfSize(A,length(SO),opts.dims)
     flag = true;
