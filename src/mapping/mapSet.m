@@ -69,22 +69,9 @@ end
         disp(B)
         disp(SO')
         disp(SN')
-
-%  ------------------------------------------------------------------------------------------------
-
-% [OBSOLETE CODE] Mapping masks 
-    if opts.type=='mask'
-        msg = "mapSet: required 'mask' output but input sets are not sorted";
-        assert(issorted(SO) & issorted(SN), msg);
-
-        maskSOtoSN = false(size(SO));
-        maskSOtoSN(SOtoSN) = SO(SOtoSN)~=0;
-        maskSNtoSO = false(size(SN));
-	    maskSNtoSO(SNtoSO) = SO(SOtoSN)~=0;
-    end
-
-%  ------------------------------------------------------------------------------------------------
 %}
+%  ------------------------------------------------------------------------------------------------
+
 
 
 
