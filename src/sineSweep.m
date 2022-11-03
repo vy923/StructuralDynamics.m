@@ -23,7 +23,7 @@ function [y,t,f,R] = sineSweep(f0,f1,opts)
 %           k           scaling constant in w(t)
 %
 %   INPUTS
-%	    f0              start [Hz]
+%       f0              start [Hz]
 %       f1              end [Hz]
 %
 %       opts{:}         name-value pairs
@@ -98,7 +98,7 @@ v2struct(opts);                                                                 
     end
 
     lin = strcmp(sweepType,'lin');                                                          % bool switch 
-	nRoffs = rampOffset*floor(rampCycles*r);                                                % Additional sampling points if rampOffset==true
+    nRoffs = rampOffset*floor(rampCycles*r);                                                % Additional sampling points if rampOffset==true
 
 % Time points, frequencies, ramp function
     if lin       
