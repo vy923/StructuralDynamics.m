@@ -11,16 +11,10 @@ function [y,t,f,R] = sineSweep(f0,f1,opts)
 %	    y               3 x n time signal matrix [a,v,u]
 %	    t               time in seconds
 %       f               instantaneous frequency as a function of time
-%       R.              structure with functions generating the ramp
-%           f(t)        frequency
-%           phi(t)      phase
-%           g(t)        ramp from 0 to tr
-%           ramp(t)     ramp from 0 to +inf
-%           w(t)        drift compensation function
-%           y(t)        sweep
-%           tr          ramp-up time
-%           tmax        total time
-%           k           scaling constant in w(t)
+%       R               structure with ramp data
+%           R.tr        time
+%           R.nR        ramp data points number
+%           R.gs        smoothstep function from 0 to +inf
 %
 %   INPUTS
 %	    f0              start [Hz]
@@ -65,11 +59,19 @@ function [y,t,f,R] = sineSweep(f0,f1,opts)
 %       (sin/cos)intx 	trigonometric integrals (Erik Koene / modded VY)
 %       fresnel(sx/cx) 	normalised Fresnel integrals (John D'Errico / modded VY)
 %
+%   KNOWN BUGS
+%       quadgk error with tr == 0 and out ~= -1
+%
 %   VERSION
+<<<<<<< HEAD
 %   v2.2 / 03.11.22 / --        all sweep functions returned in R; bugfix for tr==0 & output~=-1 error
 %                               new plotting examples at the end of function;
 %   v2.1 / 24.06.22 / --        updated opts unpacking to workspace
 %   v2.0 / 01.03.22 / V.Yotov
+=======
+%       v2.1 / 24.06.22 / --        updated opts unpacking to workspace
+%       v2.0 / 01.03.22 / V.Yotov
+>>>>>>> parent of d4ef9e6 (sineSweep v2.2)
 %  ------------------------------------------------------------------------------------------------
 
 arguments
@@ -93,8 +95,10 @@ v2struct(opts);                                                                 
     oct = log(f1/f0)/log(2);                                                                % number of octaves in sweep
     phs = phaseShift;                                                                       % phase shift in radians 
     
-    if isempty(tmax), tmax = oct/sweepRate*60;                                              % [s]
-    else, sweepRate = oct/tmax*60;                                                          % [oct/min]
+    if isempty(tmax)
+        tmax = oct/sweepRate*60;                                                            % [s]
+    else
+        sweepRate = oct/tmax*60;                                                            % [oct/min]
     end
 
     lin = strcmp(sweepType,'lin');                                                          % bool switch 
@@ -106,59 +110,74 @@ v2struct(opts);                                                                 
         c    = pi*f0^2/2/a; 
         phi  = @(t) 2*pi*(a*t.^2+f0*t);                                                     % phase [rad]
         ninv = @(x) (-f0*sqrt(r)+sqrt(4*a*x+r*f0^2))/(2*a*sqrt(r));                         % inverse of cumulative number of samples function n(t)    
+<<<<<<< HEAD
         t    = ninv([-nRoffs:r/(2*pi)*phi(tmax)])';                                         % time point vector
         R.f  = @(x) (f1-f0)/tmax*(x)+f0;                                                    % instantaneous frequency
         f    = R.f(t);
+=======
+        t	 = ninv([-nRoffs:r/(2*pi)*phi(tmax)])';                                         % time point vector
+        f	 = (f1-f0)/tmax*t+f0;                                                           % instantaneous frequency 
+>>>>>>> parent of d4ef9e6 (sineSweep v2.2)
 
         f0   = f(1);                                                                        % Updates f0/c/phi when rampOffset==true
         c    = pi*f0^2/2/a; 
-        R.phi = @(x) 2*pi*(a*x.^2+f0*x) + phs;
+        phi  = @(t) 2*pi*(a*t.^2+f0*t) + phs;
     else
         b    = (f1/f0)^(1/tmax);                                                            % exponent base
         a    = 2*pi*f0/log(b);
         phi  = @(t) a*(b.^t-1);
         ninv = @(x) log(1+2*pi/a*x/r)/log(b);
+<<<<<<< HEAD
         t    = ninv([-nRoffs:r/(2*pi)*phi(tmax)])';
         R.f  = @(x) f0*b.^x;
         f    = R.f(t);
+=======
+        t	 = ninv([-nRoffs:r/(2*pi)*phi(tmax)])';
+        f  	 = f0*b.^t;
+>>>>>>> parent of d4ef9e6 (sineSweep v2.2)
         
         a    = 2*pi*f(1)/log(b);                                                            % Updates a/phi when rampOffset==true
-        R.phi = @(x) a*(b.^x-1) + phs;                                                      % add required phase shift
+        phi  = @(t) a*(b.^t-1) + phs;                                                       % add required phase shift
     end 
-    phi = R.phi;
 	
+% Check if requested ramp offset is possible
+    if ~isreal(ninv(-nRoffs))
+        error('ERROR: Reduce number of ramp cycles')
+    end
+
 % Clean-up time vector
     t = t-t(1);                                                                             % start time = 0, as it is negative if rampOffset==true
     t(abs(t)<eps(1e2)|t<0) = 0;                                                             % clear numerical zeros
     nR = min(floor(rampCycles*r+1),numel(t));                                               % ramp points, incl. 0 and tr
     tr = t(nR);                                                                             % ramp time
 
+<<<<<<< HEAD
 % Check if requested ramp offset is possible
     assert( isreal(ninv(-nRoffs)), ...
             "sineSweep: Reduce number of ramp cycles")
     assert( ~(tr==0 && output~=-1), ...
             "sineSweep: Drift compensation not possible with zero ramp time")               % [03.11.22] bugfix
 
+=======
+>>>>>>> parent of d4ef9e6 (sineSweep v2.2)
 % Generate ramp function
-    g = smoothstep(rampOrder,tr);
-    Rf = optAnon(@(x)g(x).*sin(phi(x)));                                                    % Ramped sine for sampling 
+    g  = smoothstep(rampOrder,tr);
+    Rf = optAnon(@(x)g(x).*sin(phi(x)));
 
-% Initiate output structure
-    R.g = g;
-    R.ramp = @(x) (x<tr).*g(x) + (x>=tr);                                                   % Ramp function to +inf
-    R.w = @(x) 0;                                                                           % Zero drift compensation 
-    R.y = @(x) (x<tr).*g(x).*sin(phi(x)) + (x>=tr).*sin(phi(x));                            % Sweep function
+% Ramp data, only for output  
+    R.gs = @(x) (x<tr).*g(x) + (x>=tr);                                                     % Smoothstep extended to +inf  
     R.tr = tr;
-    R.tmax = tmax;
+    R.nR = nR;
 
-% Sampling, no corrections for v, u
-if ismember(-1,output) 
-    y = [ Rf(t(1:nR-1));  sin(phi(t(nR:end))) ];                                            % Sampled sweep
+% ------ no corrections for v, u
+if ismember(-1,output)
 
-% Sampling with corrections for v or u
-else  
+    y = [ Rf(t(1:nR-1));  sin(phi(t(nR:end))) ];
 
-    % Antiderivative without integration constant
+% ------ corrections for v or u
+else 
+    
+% Antiderivative without integration constant
     if lin  
         intA = @(t)( cos(c)*fresnelsx((2*a*t+f0)/sqrt(a)) - ...
                      sin(c)*fresnelcx((2*a*t+f0)/sqrt(a)) ) / (2*sqrt(a));
@@ -168,7 +187,7 @@ else
     optq = {'reltol',1e-8,'MaxIntervalCount',1e6};                                          % [quadgk] parameters
     opti = {'reltol',eps(1e6)};                                                             % [integral] parameters
 
-    % Boundary conditions
+% Boundary conditions
     h = msgbox(sprintf('Check for warnings, error bound << 1.0 is acceptable'), ...
         'BC parameter calc','warn');
     
@@ -185,14 +204,14 @@ else
         k   = -(cr+cl)/quadgk(@(x)(tlim-x).*g(x).*w(x,1),0,tr,optq{:}); 
     end   
 
-    % Ramped signal updated with w(x,k) term
+% Ramped signal updated with w(x,k) term
     RF = optAnon(@(x)g(x).*(sin(phi(x))+optAnon(@(x)w(x,k))));
 
-    % Definite integrals
+% Definite integrals
     c1 = quadgk(RF,0,tr,optq{:}) - intA(tr);                                                % As intA1(tr) = v(tr) = intA1L(tr) + c1
-    c2 = quadgk(@(x)(tr-x).*RF(x),0,tr,optq{:});                                            % contribution from int(sin(phi(t))-RF(t))
-
     intA1 = @(t)intA(t) + c1;
+    
+    c2 = quadgk(@(x)(tr-x).*RF(x),0,tr,optq{:});                                            % contribution from int(sin(phi(t))-RF(t))
     if lin
         c2 = c2 - (cos(2*pi*(a*tr.^2+f0*tr))/(4*pi*a)+(tr+f0/2/a).*intA1(tr));  
         intA2 = @(t)(cos(2*pi*(a*t.^2+f0*t))/(4*pi*a)+(t+f0/2/a).*intA1(t)) + c2;
@@ -200,7 +219,7 @@ else
         intA2 = @(t) intN1(intA1,t,5*r,opti{:}) + c2;                                       % Correct if t(1)==t(nR) as intN1 computes F(t(:))-F(t(1))
     end
 
-    % Compute outputs
+% Compute outputs
     y = zeros(length(t),3);
 	y(:,1) = [RF(t(1:nR-1)); sin(phi(t(nR:end))) ];
     if ismember(1,output)
@@ -209,11 +228,6 @@ else
     if ismember(2,output)
         y(:,3) = [intN2(RF,t(1:nR-1),opti{:}); intA2(t(nR:end)) ];      
     end
-
-    % Functions output
-    R.w = @(x) (x<tr).*(-k.*sin(pi*x/tr).^2);                                               % Ramp compensation
-    R.y = @(x) (x<tr).*(g(x) + R.w(x)).*sin(phi(x)) + (x>=tr).*sin(phi(x));                 % Sweep with compensation
-    R.k = k;
     
 end % if ismember(-1,out)
 
@@ -295,32 +309,36 @@ end
 %% Examples
 %{
 % ------------------------------------------------------
-% fplot for ramp, sweep, etc. [03.11.22] 
-% ------------------------------------------------------
+f0 = 45.0;
+f1 = 46.0;
+vars = {
+'output'       [0 1 2]
+'sampleRate'   20
+'tmax'         20.0
+'rampOffset'   true
+'rampCycles'   20
+'rampOrder'    -1
+'sweepType'    'log'
+'limCond'      0
+}'; 
 
-[~,~,~,R] = sineSweep(4,20,output=0,rampcycles=3.7,tmax=3.0,rampoffset=1,...
-            phaseShift=2/3*pi);
+[y,t,f] = sineSweep(f0,f1,vars{:});
 
-% Ramp with offset
-fc = @(x) R.ramp(x) + R.w(x); 
-
-xfig(n=1,b=1);
-    fplot({fc, R.y},[0,R.tmax])
-    fplot({R.w},[0,R.tmax],color=col('gainsboro'))
-    xlabel('Time [ s ]')
-    legend('Ramp-up', 'Chirp', 'Drift corr.')
-
-xfig(n=2,x=1,b=1);
-    fplot(R.f, @(x)fc(x), [0,R.tmax])
-    fplot(R.f, @(x)R.y(x), [0,R.tmax],meshdensity=1e3)
-    fplot(R.f, @(x)R.w(x), [0,R.tmax], color=col('gainsboro'))
-    xlabel('Log frequency [ Hz ]')
-    legend('Ramp-up', 'Chirp', 'Drift corr.')
-
-xfig(n=3,b=1);
-    fplot(@(x)log(R.f(x)), [0,R.tmax])
-    xlabel('Time [ s ]')
-    ylabel('Log frequency [ Hz ]')
+if 1 % --- for verification
+a=y(:,1);v=y(:,2);u=y(:,3);
+figure(2)
+    clf
+    ax = axes();
+    set(ax,'LooseInset',ax.TightInset)
+    hold on
+	grid on
+    %plot(t,a)
+    plot(t,v)
+    %plot(t,v-cumtrapz(t,a),'--')
+    %plot(t,a)
+    %plot(t,cumtrapz(t,cumtrapz(t,a)),'--')
+legend
+end
 
 % ------------------------------------------------------
 % Sweeps from f0 to f1 Hz, 5 sec total time, no ramping
@@ -368,6 +386,7 @@ sr = 4;
     legend([p1 p2],'lin','log','location','southeast');
 %}
 
+
 %% Diagnostic code
 %{
 % -------------------------------------------------------------------
@@ -399,6 +418,42 @@ Fref = arrayfun(@(v0,v1)quad2d(@(t,x)fun(x),v0,v1,0,@(x)x),v0,v1);
 %}
 
 
+%% Extra plots
+%{
+% -------------------------------------------------------------------
+% Offset function w(x) application options for ramp g(x)
+% -------------------------------------------------------------------
+n = -1;	% n<0 for sinusoid
+tr = 1;	% max time
+k = -.2; % max offset constant
+
+w = @(x)k*sin(pi*x/tr).^2;
+
+if n<0	g = @(x)sin(0.5*pi*x/tr).^2;
+else	k = arrayfun(@(k)(-1)^k*nchoosek(n+k,k)*nchoosek(2*n+1,n-k),[0:n]);
+        g = @(x)sum(k.*(x./tr).^(n+1+[0:n]));
+end
+
+clf 
+hold on
+col={'#0072BD','#D95319','#EDB120','#7E2F8E','#77AC30','#4DBEEE','#A2142F'};
+co=[7 3 4];
+
+fplot(@(x)g(x),[0 tr],'color',col{co(1)},'linestyle','-.')
+fplot(@(x)-g(x),[0 tr],'color',col{co(1)},'linestyle','-.')
+fplot(@(x)g(x)+w(x),[0 tr],'color',col{co(2)},'linestyle','-')
+fplot(@(x)-g(x)+w(x),[0 tr],'color',col{co(2)},'linestyle','-')
+fplot(@(x)g(x).*(w(x)+1),[0 tr],'color',col{co(3)},'linestyle','-')
+fplot(@(x)g(x).*(w(x)-1),[0 tr],'color',col{co(3)},'linestyle','-')
+
+p1 = fplot(@(x)0*x,[0 tr],'color',col{co(1)},'linestyle','-.','linewidth',0.5);
+p2 = fplot(@(x)w(x),[0 tr],'color',col{co(2)},'linestyle','-','linewidth',0.5);
+p3 = fplot(@(x)g(x).*w(x),[0 tr],'color',col{co(3)},'linestyle','-','linewidth',0.5);
+
+legend([p1 p2 p3],'\pmg(x)','\pmg(x)+w(x)','g(x)(\pm1+w(x))','location','northwest')
+legend([p1 p3],'\pmg(x)','g(x)(\pm1+w(x))','location','northwest')
+title(sprintf(['Normalised S%.0f ' 'ramp function with offset'],n))
+%}
 
 
 
