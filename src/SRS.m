@@ -37,8 +37,8 @@ function S = SRS(xddb,dt,opts)
 %       v2struct        unpack opts to workspace  
 %
 %   VERSION
-%       v1.3 / 27.06.22 / --        updated argument validation
-%       v1.2 / 24.06.22 / V.Yotov
+%   v1.3 / 27.06.22 / --        updated argument validation
+%   v1.2 / 24.06.22 / V.Yotov
 %  ------------------------------------------------------------------------------------------------
 
 arguments
