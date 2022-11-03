@@ -67,7 +67,7 @@ function [y,t,f,R] = sineSweep(f0,f1,opts)
 %
 %   VERSION
 %   v2.2 / 03.11.22 / --        all sweep functions returned in R; bugfix for tr==0 & output~=-1 error
-%                               new plotting examples at the end of function
+%                               new plotting examples at the end of function;
 %   v2.1 / 24.06.22 / --        updated opts unpacking to workspace
 %   v2.0 / 01.03.22 / V.Yotov
 %  ------------------------------------------------------------------------------------------------
@@ -103,22 +103,22 @@ v2struct(opts);                                                                 
 % Time points, frequencies, ramp function
     if lin       
         a    = 0.5*(f1-f0)/tmax;
-        c 	 = pi*f0^2/2/a; 
+        c    = pi*f0^2/2/a; 
         phi  = @(t) 2*pi*(a*t.^2+f0*t);                                                     % phase [rad]
         ninv = @(x) (-f0*sqrt(r)+sqrt(4*a*x+r*f0^2))/(2*a*sqrt(r));                         % inverse of cumulative number of samples function n(t)    
-        t	 = ninv([-nRoffs:r/(2*pi)*phi(tmax)])';                                         % time point vector
-        R.f	 = @(x) (f1-f0)/tmax*(x)+f0;                                                    % instantaneous frequency
+        t    = ninv([-nRoffs:r/(2*pi)*phi(tmax)])';                                         % time point vector
+        R.f  = @(x) (f1-f0)/tmax*(x)+f0;                                                    % instantaneous frequency
         f    = R.f(t);
 
         f0   = f(1);                                                                        % Updates f0/c/phi when rampOffset==true
         c    = pi*f0^2/2/a; 
         R.phi = @(x) 2*pi*(a*x.^2+f0*x) + phs;
     else
-        b	 = (f1/f0)^(1/tmax);                                                            % exponent base
+        b    = (f1/f0)^(1/tmax);                                                            % exponent base
         a    = 2*pi*f0/log(b);
         phi  = @(t) a*(b.^t-1);
         ninv = @(x) log(1+2*pi/a*x/r)/log(b);
-        t	 = ninv([-nRoffs:r/(2*pi)*phi(tmax)])';
+        t    = ninv([-nRoffs:r/(2*pi)*phi(tmax)])';
         R.f  = @(x) f0*b.^x;
         f    = R.f(t);
         
@@ -129,7 +129,7 @@ v2struct(opts);                                                                 
 	
 % Clean-up time vector
     t = t-t(1);                                                                             % start time = 0, as it is negative if rampOffset==true
-	t(abs(t)<eps(1e2)|t<0) = 0;                                                             % clear numerical zeros
+    t(abs(t)<eps(1e2)|t<0) = 0;                                                             % clear numerical zeros
     nR = min(floor(rampCycles*r+1),numel(t));                                               % ramp points, incl. 0 and tr
     tr = t(nR);                                                                             % ramp time
 
@@ -137,7 +137,7 @@ v2struct(opts);                                                                 
     assert( isreal(ninv(-nRoffs)), ...
             "sineSweep: Reduce number of ramp cycles")
     assert( ~(tr==0 && output~=-1), ...
-            "sineSweep: Integral compensation not possible with zero ramp time")            % 03.11.22 bugfix
+            "sineSweep: Drift compensation not possible with zero ramp time")               % [03.11.22] bugfix
 
 % Generate ramp function
     g = smoothstep(rampOrder,tr);
@@ -204,10 +204,10 @@ else
     y = zeros(length(t),3);
 	y(:,1) = [RF(t(1:nR-1)); sin(phi(t(nR:end))) ];
     if ismember(1,output)
-	    y(:,2) = [intN1(RF,t(1:nR-1),5*r,opti{:}); intA1(t(nR:end)) ];  
+        y(:,2) = [intN1(RF,t(1:nR-1),5*r,opti{:}); intA1(t(nR:end)) ];  
     end
     if ismember(2,output)
-	    y(:,3) = [intN2(RF,t(1:nR-1),opti{:}); intA2(t(nR:end)) ];      
+        y(:,3) = [intN2(RF,t(1:nR-1),opti{:}); intA2(t(nR:end)) ];      
     end
 
     % Functions output
@@ -221,7 +221,7 @@ end % if ismember(-1,out)
     try delete(h); end
 
 % Display solution settings
-	fprintf('\nSweep freq: %.2f-%.2f Hz \n', [f(1) f1])
+    fprintf('\nSweep freq: %.2f-%.2f Hz \n', [f(1) f1])
     fprintf('Sweep rate: %g oct/min\n', sweepRate)
     fprintf('Sweep time: %.2f s\n', t(end))
     fprintf('Samples:    %.0f \n', numel(t))
