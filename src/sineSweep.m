@@ -8,8 +8,8 @@ function [y,t,f,R] = sineSweep(f0,f1,opts)
 %       Related:        rotatingForce, forcedAcce1D
 %
 %   OUTPUTS
-%	    y               3 x n time signal matrix [a,v,u]
-%	    t               time in seconds
+%       y               3 x n time signal matrix [a,v,u]
+%       t               time in seconds
 %       f               instantaneous frequency as a function of time
 %       R.              structure with functions generating the ramp
 %           f(t)        frequency
