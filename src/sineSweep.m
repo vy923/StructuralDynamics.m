@@ -268,18 +268,18 @@ end
 % vector of definite integral values y = F(t(1:n))-F(t(1))
 function y = intN1(fun,t,r,varargin)
     n = length(t);
-	y = zeros(n,1);
+    y = zeros(n,1);
     m = '[%.0f/%.0f] blocks';
-	h = waitbar(0,sprintf(m,0,n/r),'name','Integrating...');   
-	for i = 1:ceil((n-1)/r)
+    h = waitbar(0,sprintf(m,0,n/r),'name','Integrating...');   
+    for i = 1:ceil((n-1)/r)
         k = (i-1)*r+1;                                                                      % i-th block start index
         s = min(r,n-k);  
         y(k+1:k+s) = y(k) + intArr(fun,t(k),t(k+1:k+s),varargin{:});                        % accumulate integral for i-th block
         if rem(i,ceil((n-1)/r/25))==0
             waitbar(i/ceil(n/r),h,sprintf(m,i,n/r))
         end
-	end
-	delete(h)
+    end
+    delete(h)
 end
 
 % Numerical double integration on [0,T1] using Cauchy's formula 
