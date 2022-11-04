@@ -10,7 +10,7 @@ function ids = getblocks(T,atol)
 %       [k x 2] array with with [start end] row indices of continuous blocks of T
 %
 %   VERSION
-%       v1.0 / 26.10.22 / V.Yotov
+%   v1.0 / 26.10.22 / V.Y.
 %  ------------------------------------------------------------------------------------------------
 
 arguments

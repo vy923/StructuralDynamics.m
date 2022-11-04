@@ -22,7 +22,7 @@ function T = autofill(T,flags,opts)
 %       T               [n x 4] with filled values according to 'flags'
 %
 %   VERSION
-%       v1.0 / 26.10.22 / V.Yotov
+%   v1.0 / 26.10.22 / V.Y.
 %  ------------------------------------------------------------------------------------------------
 
 arguments

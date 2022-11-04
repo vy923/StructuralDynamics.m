@@ -22,7 +22,7 @@ function [B,idxO2N,idxN2O] = mapSet(SO,SN,A,B,opts)
 %       - do operations on pre-initialised B, replace/add/multiply with A
 %
 %   VERSION
-%       v1.0 / 22.10.22 / V.Yotov
+%   v1.0 / 22.10.22 / V.Y.
 %  ------------------------------------------------------------------------------------------------
 
 arguments

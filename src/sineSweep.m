@@ -66,10 +66,10 @@ function [y,t,f,R] = sineSweep(f0,f1,opts)
 %       fresnel(sx/cx) 	normalised Fresnel integrals (John D'Errico / modded VY)
 %
 %   VERSION
-%   v2.2 / 03.11.22 / --        all sweep functions returned in R; bugfix for tr==0 & output~=-1 error
-%                               new plotting examples at the end of function;
-%   v2.1 / 24.06.22 / --        updated opts unpacking to workspace
-%   v2.0 / 01.03.22 / V.Yotov
+%   v2.2 / 03.11.22 / --    all sweep functions returned in R / bugfix for tr==0 & output~=-1 error /
+%                           new plotting examples at the end of function
+%   v2.1 / 24.06.22 / --    updated opts unpacking to workspace
+%   v2.0 / 01.03.22 / V.Y.
 %  ------------------------------------------------------------------------------------------------
 
 arguments
@@ -298,24 +298,27 @@ end
 % fplot for ramp, sweep, etc. [03.11.22] 
 % ------------------------------------------------------
 
-[~,~,~,R] = sineSweep(4,20,output=0,rampcycles=3.7,tmax=3.0,rampoffset=1,...
+[~,~,~,R] = sineSweep(4,20,output=0,rampcycles=2.1,tmax=3.0,rampoffset=1,...
             phaseShift=2/3*pi);
 
 % Ramp with offset
-fc = @(x) R.ramp(x) + R.w(x); 
+fcp = @(x) R.ramp(x) + R.w(x);
+fcn = @(x) -R.ramp(x) + R.w(x);
 
 xfig(n=1,b=1);
-    fplot({fc, R.y},[0,R.tmax])
-    fplot({R.w},[0,R.tmax],color=col('gainsboro'))
+    fplot({fcp,fcn},[0,R.tmax],color=col('b2'))
+    fplot(R.y,[0,R.tmax],color=col('f2'))
+    fplot(R.w,[0,R.tmax],color=col('gainsboro'))
     xlabel('Time [ s ]')
-    legend('Ramp-up', 'Chirp', 'Drift corr.')
+    legend('Ramp-up', '', 'Chirp', 'Drift corr.')
 
 xfig(n=2,x=1,b=1);
-    fplot(R.f, @(x)fc(x), [0,R.tmax])
-    fplot(R.f, @(x)R.y(x), [0,R.tmax],meshdensity=1e3)
-    fplot(R.f, @(x)R.w(x), [0,R.tmax], color=col('gainsboro'))
-    xlabel('Log frequency [ Hz ]')
-    legend('Ramp-up', 'Chirp', 'Drift corr.')
+    fplot(R.f, @(x)fcp(x),[0,R.tmax],color=col('b2'))
+    fplot(R.f, @(x)fcn(x),[0,R.tmax],color=col('b2'))
+    fplot(R.f, @(x)R.y(x),[0,R.tmax],color=col('f2'),meshdensity=1e3)
+    fplot(R.f, @(x)R.w(x),[0,R.tmax],color=col('gainsboro'))
+    xlabel('Frequency [ Hz ]')
+    legend('Ramp-up', '', 'Chirp', 'Drift corr.')
 
 xfig(n=3,b=1);
     fplot(@(x)log(R.f(x)), [0,R.tmax])

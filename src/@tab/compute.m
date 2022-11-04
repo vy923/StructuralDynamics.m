@@ -14,7 +14,7 @@ function T = compute(T,opts)
 %       T               [n x 4] with filled and consistency-validated values
 %
 %   VERSION
-%       v1.0 / 26.10.22 / V.Yotov
+%   v1.0 / 26.10.22 / V.Y.
 %  ------------------------------------------------------------------------------------------------
 
 X1 = T(1:end-1,1);

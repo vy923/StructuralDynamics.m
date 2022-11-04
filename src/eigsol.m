@@ -5,8 +5,8 @@ function [x,lam] = eigsol(K,varargin)
 %       Wrapper for built-in eig() that forces eigenvector scaling  
 %
 %   VERSION
-%       v1.2 / 30.10.22 --          clean-up
-%       v1.1 / 16.12.21 / V.Yotov
+%   v1.2 / 30.10.22 --      clean-up
+%   v1.1 / 16.12.21 / V.Y.
 %  ------------------------------------------------------------------------------------------------
 
 switch nargin

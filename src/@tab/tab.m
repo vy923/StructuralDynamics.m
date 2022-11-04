@@ -1,9 +1,9 @@
-classdef tab
+editclassdef tab
 %  ------------------------------------------------------------------------------------------------
 %   DESCRIPTION
-%       tb = <strong>tab</strong>(T,opts)
+%       tb = TAB(T,opts)
 %
-%       Constructor for the tab class
+%       Constructor for the TAB class
 %       Objects hold a piecewise linear representation of a function in the form [X Y LS RS], where 
 %       LS and RS are the left and right slopes at points [X Y]
 %
@@ -13,9 +13,9 @@ classdef tab
 %
 %   INPUTS
 %       T               [n+1 x ncols] array with 2, 3 or 4 columns and NaN empty fields
-%           2 columns   assumes [X Y]
-%           3 columns   assumes [X Y RS]
-%           4 columns   must be [X Y LS RS]
+%         ~ 2 columns   assumes [X Y]
+%         ~ 3 columns   assumes [X Y RS]
+%         ~ 4 columns   must be [X Y LS RS]
 %
 %       opts{:}
 %           type        data type, currently only 'PSD'
@@ -34,7 +34,7 @@ classdef tab
 %           rs          right slope of final block
 %
 %   OUTPUTS
-%       tb              initialised object
+%       tb              initialised TAB object
 %
 %   UPDATES
 %       - merge function with min/max options for adding profiles, etc.
@@ -43,10 +43,10 @@ classdef tab
 %       - pass options directly to all methods
 %
 %   VERSION
-%       v2.0 / 26.10.22 / --        redefined as 'tab' class, updated methods for the constructor
-%       v1.2 / 23.10.22 / --        handling of discontinuities i.e. zero Y, +/-Inf slopes 
-%       v1.1 / 16.10.22 / --        epstol, extrapolation slopes for end blocks
-%       v1.0 / 14.10.22 / V.Yotov
+%   v2.0 / 26.10.22 / --    redefined as TAB class, updated methods for the constructor
+%   v1.2 / 23.10.22 / --    handling of discontinuities i.e. zero Y, +/-Inf slopes 
+%   v1.1 / 16.10.22 / --    epstol, extrapolation slopes for end blocks
+%   v1.0 / 14.10.22 / V.Y.
 %  ------------------------------------------------------------------------------------------------
 
 properties

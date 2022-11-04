@@ -15,7 +15,7 @@ function [C,ccmod] = modalDamping(M,K,zeta)
 %       zeta        scalar or vector of modal damping values
 %
 %   VERSION
-%       v1.0 / 23.06.22 / V.Yotov
+%   v1.0 / 23.06.22 / V.Y.
 %  ------------------------------------------------------------------------------------------------
 
 % Make zeta n x 1 vec

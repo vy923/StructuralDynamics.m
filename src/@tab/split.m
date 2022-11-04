@@ -8,8 +8,8 @@ function T = split(T)
 %       Related:        collapse, autofill, compute, validate
 %
 %   VERSION
-%       v1.1 / 28.10.22 / --        better performance, verbose replacements for mapSet/setdiff 
-%       v1.0 / 26.10.22 / V.Yotov
+%   v1.1 / 28.10.22 / --    better performance, verbose replacements for mapSet/setdiff 
+%   v1.0 / 26.10.22 / V.Y.
 %  ------------------------------------------------------------------------------------------------
    
 % Compute until no change in nrows of T occurs

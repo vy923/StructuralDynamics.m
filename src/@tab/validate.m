@@ -21,7 +21,7 @@ function validate(T,flags)
 %           5           zero Y1 and Y2 with noninf/nonnan slope
 %
 %   VERSION
-%       v1.0 / 26.10.22 / V.Yotov
+%   v1.0 / 26.10.22 / V.Y.
 %  ------------------------------------------------------------------------------------------------
 
 if nargin < 2

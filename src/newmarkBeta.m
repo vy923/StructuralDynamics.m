@@ -3,20 +3,20 @@ function [x,xd,xdd] = newmarkBeta(M,C,K,f,dt,beta,gamma,x0)
 %   DESCRIPTION
 %       [x,xd,xdd] = newmarkBeta(M,C,K,f,dt,beta,gamma,x0)
 %
-%       See also:   --
-%       Related:    SRS, forcedAcce1D
+%       See also:       --
+%       Related:        SRS, forcedAcce1D
 %
 %   OUTPUTS
-%       x/xd/xdd    disp/vel/acce [dof x timesteps] 
+%       x/xd/xdd        disp/vel/acce [dof x timesteps] 
 %
 %   INPUTS
-%       dt          time step
-%       beta        default = 0.25
-%       gamma       default = 0.5
-%       x0          initial displacement, e.g. 0
+%       dt              time step
+%       beta            default = 0.25
+%       gamma           default = 0.5
+%       x0              initial displacement, e.g. 0
 %
 %   VERSION
-%       v1.1 / 23.06.22 / V.Yotov
+%   v1.1 / 23.06.22 / V.Y.
 %  ------------------------------------------------------------------------------------------------
 
 % Constants
