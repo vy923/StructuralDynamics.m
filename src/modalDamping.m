@@ -23,7 +23,7 @@ switch length(zeta)
     case 1     
         zeta = zeta*ones(length(M),1);
     otherwise  
-        zeta = cvec(zeta,false);
+        zeta = cvec(zeta);
 end
 
 % Get modal crit damping from 2*sqrt(k*m). 

@@ -1,4 +1,4 @@
-editclassdef tab
+classdef tab
 %  ------------------------------------------------------------------------------------------------
 %   DESCRIPTION
 %       tb = TAB(T,opts)
@@ -110,8 +110,8 @@ end
 
 methods(Static)
     % PROPERTIES
-    T = split(T)
-    T = autofill(T,flags,opts)   
+    T = split(T);
+    T = autofill(T,flags,opts) 
     T = compute(T,opts)
     T = collapse(T,opts)
     ids = getblocks(T,tol)

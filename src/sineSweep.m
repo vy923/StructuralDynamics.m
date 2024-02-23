@@ -27,7 +27,7 @@ function [y,t,f,R] = sineSweep(f0,f1,opts)
 %       f1              end [Hz]
 %
 %       opts{:}         name-value pairs
-%           output      vector with output integral orders, default = -1
+%           [a,v,u]     vector with output integral orders, default = -1
 %               [-1] 	no drift correction
 %               [0 1 2] compute a, v, u, e.g. [0 2] requests only a and u
 %
@@ -201,7 +201,7 @@ else
     end
 
     % Compute outputs
-    y = zeros(length(t),3);
+    y = nan(length(t),3);
 	y(:,1) = [RF(t(1:nR-1)); sin(phi(t(nR:end))) ];
     if ismember(1,output)
         y(:,2) = [intN1(RF,t(1:nR-1),5*r,opti{:}); intA1(t(nR:end)) ];  

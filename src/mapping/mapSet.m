@@ -18,10 +18,8 @@ function [B,idxO2N,idxN2O] = mapSet(SO,SN,A,B,opts)
 %       idxO2N          forward  map idxs SO->SN: SO(idxO2N) == SN(sort(idxN2O))
 %       idxN2O          backward map idxs SN->SO: SN(idxN2O) == SO(sort(idxO2N))
 %
-%   UPDATES
-%       - do operations on pre-initialised B, replace/add/multiply with A
-%
 %   VERSION
+%   v1.1 / xx.xx.xx / --    [-] do ops on pre-initialised B, replace/add/multiply with A
 %   v1.0 / 22.10.22 / V.Y.
 %  ------------------------------------------------------------------------------------------------
 
@@ -36,6 +34,8 @@ end
 if ~isempty(A)
     mustBeOfSize(A,length(SO),opts.dims)
     flag = true;
+else
+    flag = false;
 end
 
 % Intersection indices
@@ -60,10 +60,12 @@ end
 %  ------------------------------------------------------------------------------------------------
 %{
 % Example 1
+
     A = zeros(4); 
     A(1:numel(A)) = 10*[1:numel(A)];
     SO = [9 3 7 4]';
     SN = [8:10 4:-1:1 6]';
+
     [B,SOtoSN,SNtoSO] = mapSet(SO,SN,A,dims=[1 2]);
         disp(A)
         disp(B)

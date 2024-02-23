@@ -53,7 +53,7 @@ arguments
     opts.methInterp {mustBeMember(opts.methInterp,["linear","spline","makima"])} = 'linear'
     opts.methSRS {mustBeStartString(opts.methSRS,["acceleration","velocity","displacement"])} = 'acc'
     opts.signSRS {mustBeStartString(opts.signSRS,["positive","negative","absolute"])} = 'abs'
-    opts.xout {mustBeMember(opts.xout,[0:2])} = []
+    opts.xout {mustBeMember(opts.xout,0:2)} = []
 end
 
 v2struct(opts);                                                                                 % Alternative: cellfun(@(n) assignin('caller',n,getfield(opts,n)),fieldnames(opts))
