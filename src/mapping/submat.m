@@ -13,7 +13,7 @@ function A = submat(A,SO,SN)
 %       A               SN1 x SN2 x ... x SNn
 %
 %   VERSION
-%   v1.1 / 24.02.24 / --    single SO/SN for column vector A / skip empty DOF sets / examples
+%   v1.1 / 24.02.24 / --    single SO, SN for column vector A / skip empty DOF sets / examples
 %   v1.0 / 23.02.24 / V.Y.
 %  ------------------------------------------------------------------------------------------------
 
@@ -25,21 +25,23 @@ arguments(Repeating)
     SN {mustBeVector(SN,'allow-all-empties')}
 end
 
-% Validate argument sizes
+% Argument sizes
     if isvector(A) && numel(SO)==1
         SO{2} = [];
         SN{2} = [];
-    end   
+    end  
     na = ndims(A);
     ns = numel(SO);
     flag = ns==[1 na];
 
+% Break
     assert(any(flag),"submat: SO, SN pairs must be 1 or ndims(A)")
 
 % Skip empty SO sets on remap
     for d = find(~cellfun(@isempty,SO))                                                             % d = 1 / 1:na
         A = mapSet(SO{d},SN{d},A,dims=d:max(flag.*[na d]));                                         % dims = 1:na / d
     end
+
 
 %  ------------------------------------------------------------------------------------------------
 %{
@@ -49,11 +51,12 @@ end
     SO = [9 3 7 4]';
     SN = [8:10 4:-1:1 6]';
 
-    [B,SOtoSN,SNtoSO] = mapSet(SO,SN,A,dims=[1 2]);
-        disp(A)
-        disp(B)
-        disp(SO')
-        disp(SN')
+    [B,O2N,N2O] = mapSet(SO,SN,A,dims=[1 2]);
+
+    disp(A)
+    disp(B)
+    disp(SO')
+    disp(SN')
 
     disp(submat(A,SO,SN))
     disp(submat(A,SO,SN,SO,SN))
