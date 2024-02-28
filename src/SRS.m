@@ -37,7 +37,7 @@ function S = SRS(xddb,dt,opts)
 %       v2struct        unpack opts to workspace  
 %
 %   VERSION
-%   v1.4 / 28.02.24 / --    added square wave example
+%   v1.4 / 28.02.24 / --    added square wave + n-period sine examples
 %   v1.3 / 27.06.22 / --    updated argument validation
 %   v1.2 / 24.06.22 / V.Y.
 %  ------------------------------------------------------------------------------------------------
@@ -117,7 +117,8 @@ v2string(methInterp,methSRS,signSRS);                                           
 
 %  ------------------------------------------------------------------------------------------------
 %{
-% Example 1: Square wave SRS
+% [EXAMPLE 1], Square wave SRS
+
 dt = 1e-6;
 sf = 200;                                                                                       % square wave frequency [Hz]
 n  = 2;                                                                                         % sq. wave periods
@@ -131,8 +132,8 @@ wv = padw(swav(sf,dt,n),k);
 
 t = tiledlayout(3,1);
 [ax,fig] = xfig(nexttile(t,1,[2 1]),xy=1,b=1,c=1);
-    fig.Position = [100 100 698 392].*[1 1 1.2 1.8];
 
+    fig.Position = [100 100 698 392].*[1 1 1.2 1.8];
     for z = zeta
         S = SRS(wv,dt,noct=200,zeta=z,f0=f(1),f1=f(2));
         plot(S.f,S.abs.acc)
@@ -143,17 +144,51 @@ t = tiledlayout(3,1);
     ax.YLabel.String = 'SRS';
 
 [ax,fig] = xfig(nexttile(t,3),b=1,c=1);
-    plot(0:dt:size(wv,1)*dt-dt,wv);
 
+    plot(0:dt:size(wv,1)*dt-dt,wv);
     ax.XLimitMethod = 'tight';
     ax.YLimitMethod = 'padded';
     ax.YLabel.String = 'Acceleration';
     ax.XLabel.String = 'Time, s';
 
-    % exportgraphics(fig,'figVec1.pdf','contenttype','vector')
-    % print('-painters','-dsvg','figVec1');                                                     % .svg option 
+
+% [EXAMPLE 2], n-period sine SRS
+
+dt = 1e-6;
+sf = 200;                                                                                       % frequency [Hz]
+n = 0.5;                                                                                        % number of periods
+k = 1;                                                                                          % zero signal padding
+w = 2*pi*sf;
+x = 0:dt*w:2*pi*n;
+
+S = SRS([sin(cvec(x)); zeros(k*length(x),1)],dt,noct=200,f0=10);
+
+ax = xfig(1,b=1,x=1,g=2,c=1);
+    plot(S.f,S.abs.acc);
 %}
 %  ------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
