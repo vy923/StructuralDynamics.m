@@ -14,6 +14,7 @@ function T = compute(T,opts)
 %       T               [n x 4] with filled and consistency-validated values
 %
 %   VERSION
+%   v1.1 / 21.03.22 / --    allow constant zero blocks
 %   v1.0 / 26.10.22 / V.Y.
 %  ------------------------------------------------------------------------------------------------
 
@@ -26,18 +27,18 @@ maskBlock = true(size(T,1)-1, 1);
 
 while any(maskBlock)
     
-    LS = T(2:end,3); 
-    RS = T(1:end-1,4); 
+    LS = T(2:end,3);
+    RS = T(1:end-1,4);
     Y1 = T(1:end-1,2);
     Y2 = T(2:end,2);
 
     % Exclude singularities from explicit computation
-    maskBlock( isinf(RS) | isinf(LS) | Y1.*Y2==0 ) = false;                            
+    maskBlock( isinf(RS) | isinf(LS) | xor(Y1==0,Y2==0) ) = false;                                      % v1.1: Y1.*Y2==0 -> xor(Y1==0,Y2==0)
 
     % Fields computable from current data, may overlap
     maskR = ~isnan(Y1 + RS) & maskBlock;                                         
     maskL = ~isnan(LS + Y2) & maskBlock;
-    maskY = ~isnan(Y1 + Y2) & maskBlock;
+    maskY = ~isnan(Y1 + Y2) & maskBlock & (Y1.*Y2~=0);                                                  % v1.1: [] -> & (Y1.*Y2~=0)                          
 
     % Prevent infinite loops
     assert(any( maskR | maskL | maskY ));                                             
@@ -47,7 +48,7 @@ while any(maskBlock)
     idxY = find(maskY);
 
     % Compute, incl. with overlapping methods
-    tmpY2 = Y1(idxR) .* 10.^(RS(idxR).*logX(idxR)/10);                          % <--- allow for other computational rules in next versions
+    tmpY2 = Y1(idxR) .* 10.^(RS(idxR).*logX(idxR)/10);
     tmpY1 = Y2(idxL) .* 10.^(RS(idxL).*-logX(idxL)/10);
     tmpRS = 10*log10(Y2(idxY)./Y1(idxY)) ./ logX(idxY);
 

@@ -41,6 +41,7 @@ classdef tab
 %       - inerp1 -> addpoints -> integral
 %       - add opts.rtol?
 %       - pass options directly to all methods
+%       - option to ignore slopes after initial table contrsuction, i.e. for all 'tab' objects
 %
 %   VERSION
 %   v2.0 / 26.10.22 / --    redefined as TAB class, updated methods for the constructor
@@ -77,7 +78,7 @@ methods
         
         if ~issorted(T(:,1))
             warning(['tab: first column of input was not sorted. Correct results ' ...
-                'are not guaranteed in case of discontinuous tables.'], 'tab', 'warn');
+                     'are not guaranteed in case of discontinuous tables.'], 'tab', 'warn');
             T = sortrows(T);
         end
         
