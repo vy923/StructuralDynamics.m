@@ -1,12 +1,13 @@
 %  ------------------------------------------------------------------------------------------------
 %   DESCRIPTION
-%       [Y,T] = interpc4(T,f)
+%       [Y,T] = interpc4(T,f,extrap)
 %       Interpolates a table given by T
 %
 %       See also:       tab
 %       Related:        scalec4, integratec4
 %
-%   VERSION      
+%   VERSION
+%       v1.3 / 10.05.24 / --    bugfixes for extrap = true
 %       v1.2 / 21.03.24 / --    size(W) == size(f) / tabc4 -> tab / efficiency improvements
 %       v1.1 / 16.10.22 / --    extrapolation uses actual end band slopes
 %       v1.0 / 14.10.22 / V.Y.
@@ -38,7 +39,8 @@ function [Y,T] = interpc4(T,f,extrap)
             V(end+1,:) = [maxf, nan(1,size(V,2)-1)];  
         end
         if size(V,1) ~= size(T.val,1)                                                              % Update T if necessary
-            T = tab(V);
+            T = tab(V,collapse=false);
+            V = T.val;
         end
         mask = true(size(f));
     else

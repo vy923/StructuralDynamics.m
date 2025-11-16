@@ -121,10 +121,10 @@ v2string(methInterp,methSRS,signSRS);                                           
 
 dt = 1e-6;
 sf = 200;                                                                                       % square wave frequency [Hz]
-n  = 2;                                                                                         % sq. wave periods
+n  = 5;                                                                                         % sq. wave periods
 k  = 1;                                                                                         % zero signal at end of excitation k times longer than input sq. wave
 f  = [1e1 1e4];                                                                                 % frequency range
-zeta = [.01:.02:.07];                                                                           % modal damping
+zeta = [.06:.02:.1];                                                                           % modal damping
 
 padw = @(x,k) [cvec(x(1:end-1)); zeros(length(x)*k,1)];                                         % pad with zeros k times the length of input
 swav = @(f,dt,n) square(2*pi*(0:sf*dt:n));                                                      % n-period square wave of freq. sf and sampling rate dt
@@ -155,8 +155,8 @@ t = tiledlayout(3,1);
 % [EXAMPLE 2], n-period sine SRS
 
 dt = 1e-6;
-sf = 200;                                                                                       % frequency [Hz]
-n = 0.5;                                                                                        % number of periods
+sf = 500;                                                                                       % frequency [Hz]
+n = 10.5;                                                                                        % number of periods
 k = 1;                                                                                          % zero signal padding
 w = 2*pi*sf;
 x = 0:dt*w:2*pi*n;

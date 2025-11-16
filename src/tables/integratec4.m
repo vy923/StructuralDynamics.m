@@ -1,6 +1,6 @@
 %  ------------------------------------------------------------------------------------------------
 %   DESCRIPTION
-%       [X,Xb] = integratec4(T,f)
+%       [X,Xb] = integratec4(T)
 %
 %       Integrates a c4 table given by T and returns total and band RMS values in X, Xb
 %       Note that for PSD tables X = sqrt(sum(Xb.^2))

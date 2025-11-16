@@ -26,7 +26,7 @@ arguments(Repeating)
 end
 
 % Argument sizes
-    if isvector(A) && numel(SO)==1
+    if isvector(A) && isscalar(SO)
         SO{2} = [];
         SN{2} = [];
     end  

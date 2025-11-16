@@ -17,18 +17,20 @@ function T = collapse(T,opts)
 %       updated T
 %
 %   VERSION
+%   v1.1 / 30.09.25 / --    added opts.rtol
 %   v1.0 / 26.10.22 / V.Y.
 %  ------------------------------------------------------------------------------------------------
 
 arguments
     T
     opts.atol = 0
+    opts.rtol = sqrt(eps)
     opts.idx = [2 3 4]
 end
 
 % 3-row window equality check for columns opts.idx
-mask = isapprox(T(2:end-1,opts.idx), T(1:end-2,opts.idx), opts.atol) & ...
-       isapprox(T(2:end-1,opts.idx), T(3:end,opts.idx), opts.atol);
+mask = isapprox(T(2:end-1,opts.idx), T(1:end-2,opts.idx), opts.atol, opts.rtol) & ...
+       isapprox(T(2:end-1,opts.idx), T(3:end,opts.idx), opts.atol, opts.rtol);
 
 % Remove superfluous rows
 if any(mask,'all')

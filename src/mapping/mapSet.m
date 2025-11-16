@@ -19,7 +19,8 @@ function [B,idxO2N,idxN2O] = mapSet(SO,SN,A,B,opts)
 %       idxN2O          backward map idxs SN->SO: SN(idxN2O) == SO(sort(idxO2N))
 %
 %   VERSION
-%   v1.1 / xx.xx.xx / --    [-] do ops on pre-initialised B, replace/add/multiply with A
+%   v1.2 / xx.xx.xx / --    [-] do ops on pre-initialised B, replace/add/multiply with A
+%   v1.1 / 26.10.25 / --    handles arbitrary A types
 %   v1.0 / 22.10.22 / V.Y.
 %  ------------------------------------------------------------------------------------------------
 
@@ -52,7 +53,12 @@ if flag
     cla(opts.dims) = {idxO2N};
     clb(opts.dims) = {sort(idxN2O)};
 
-    B = zeros(sz); 
+    % type agnostic
+    if isnumeric(A) || islogical(A)
+        B = zeros(sz,'like',A);
+    else
+        B = createArray(sz,class(A));
+    end
     B(clb{:}) = A(cla{:});
 end
 

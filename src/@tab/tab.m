@@ -37,6 +37,7 @@ classdef tab
 %       tb              initialised TAB object
 %
 %   UPDATES
+%       - collapse by slope & veryfy isapprox
 %       - merge function with min/max options for adding profiles, etc.
 %       - inerp1 -> addpoints -> integral
 %       - add opts.rtol?
@@ -106,7 +107,7 @@ methods
     end
 
     % OVERLOADS
-    Y = interp1(T,f,opts)
+    Y = interp1(tb,f,opts)                                                              % <--------- UNFINISHED
 end
 
 methods(Static)
