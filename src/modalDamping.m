@@ -15,6 +15,7 @@ function [C,ccmod] = modalDamping(M,K,zeta)
 %       zeta        scalar or vector of modal damping values
 %
 %   VERSION
+%   v1.1 / 16.12.25 / --    pinv(Q) --> Q'*M
 %   v1.0 / 23.06.22 / V.Y.
 %  ------------------------------------------------------------------------------------------------
 
@@ -27,12 +28,11 @@ switch length(zeta)
 end
 
 % Get modal crit damping from 2*sqrt(k*m). 
-% Note Q'*M*Q == I from eigsol
 [Q,~] = eigsol(K,M); 
-ccmod = 2*sqrt(diag(Q'*K*Q));
+ccmod = 2*sqrt(diag(Q'*K*Q));                                               % Note Q'*M*Q == I from eigsol
 
 % Project to physical space
-invQ = pinv(Q);
+invQ = Q'*M;                                                                % Q'*M == pinv(Q)
 C = invQ'.*(zeta.*ccmod).'*invQ;
 
 

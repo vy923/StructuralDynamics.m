@@ -3,8 +3,6 @@ function X = xcoh(A,B,dim)
 %   DESCRIPTION
 %       X = XCOH(A,B,dim)
 %
-%       See also:   dummySC
-%
 %   INPUTS
 %       A, B        arrays of compatible sizes
 %       dim         dim to evaluate correlation along

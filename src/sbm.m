@@ -3,7 +3,7 @@ function X = sbm(x,sys,dof,opts)
 %   DESCRIPTION
 %       X = SBM(x,sys,dof,opts)
 %
-%       See also:   dummySC
+%       See also:   submat, autoExtract, s2vars
 %
 %   INPUTS
 %       x           matrix, e.g. 'TAG' or "T.A.Gb"
@@ -13,7 +13,12 @@ function X = sbm(x,sys,dof,opts)
 %           w       [rad/s] discrete frequencies omega 
 %           fmax    [Hz] 
 %
+%   OUTPUTS
+%       X           submatrix/FRF from sys
+%
 %   VERSION
+%   v1.2 / xx.xx.xx / --    [-] examples
+%   v1.1 / 16.12.25 / --    autoExtract recursively computes G/P/X as needed
 %   v1.0 / 25.10.25 / V.Y.  from dummySC v1.0
 %  ------------------------------------------------------------------------------------------------
 
@@ -31,6 +36,10 @@ function X = sbm(x,sys,dof,opts)
         x = char(x);
     end
 
+    % autocomplete
+    autoExtract(x,sys,dof,updateSys=true);
+
+    % output
     if any(x(1)==["G" "P"])                                                                             % Default DOF sets of P, G are A x S
         X = submat(sys.(x(1)),dof.A,dof.(x(2)),dof.S,dof.(x(3)));
 

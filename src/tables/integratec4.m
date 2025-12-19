@@ -30,7 +30,7 @@ function [X,Xb] = integratec4(T)
 
 % Computation
     C = 1 + RS/(10*log10(2));
-    A = W1.*F1./C .* ((F2./F1).^C - 1);
+    A = W1.*F1./C .* ((F2./F1).^C - 1)
 
     X  = sqrt(sum(A));
     Xb = sqrt(A);
