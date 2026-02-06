@@ -17,7 +17,8 @@ function autoExtract(x,sys,dof,opts)
 %           autofill    compute P/G/modal, default=false
 %
 %   VERSION
-%   v1.1 / xx.xx.xx / --    [-] examples / [-] damping autofill from c/zeta/C
+%   v1.2 / xx.xx.xx / --    [-] examples / [-] damping autofill from c/zeta/C
+%   v1.1 / 06.02.26 / --    isfield critical syntax bugfix
 %   v1.0 / 16.12.25 / V.Y.  recursively computes G/P/X as needed
 %  ------------------------------------------------------------------------------------------------
 
@@ -41,15 +42,15 @@ function autoExtract(x,sys,dof,opts)
     % recursive eval
     switch x(1)
         case 'G'
-            if ~isfield('G','sys')
+            if ~isfield(sys,'G')
                 KAA = submat(sys.K,dof.G,dof.A);
                 KAS = submat(sys.K,dof.G,dof.A,dof.G,dof.S);
                 sys.G = -pinv(full(KAA))*KAS;
             end
 
         case 'P'
-            if ~isfield('P','sys')
-                if ~isfield('G','sys')
+            if ~isfield(sys,'P')
+                if ~isfield(sys,'G')
                     autoExtract('G',sys,dof,updateSys=true);
                 end
                 MAA = submat(sys.M,dof.G,dof.A);
@@ -58,10 +59,9 @@ function autoExtract(x,sys,dof,opts)
             end
 
         case 'X'
-            if ~isfield('X','sys')
+            if ~isfield(sys,'X')
                 [sys.X,sys.k] = eigsol(sbm('KAA',sys,dof),sbm('MAA',sys,dof));
                 sys.k = diag(sys.k);
-
                 mask = ~isinf(sys.k);
                 sys.X = sys.X(:,mask);
                 sys.k = sys.k(mask);
@@ -73,15 +73,15 @@ function autoExtract(x,sys,dof,opts)
             end
 
         case 'H'
-            if ~isfield('X','sys')
+            if ~isfield(sys,'X')
                 autoExtract('X',sys,dof,updateSys=true);
             end
 
         case 'T'
-            if ~isfield('X','sys')
+            if ~isfield(sys,'X')
                 autoExtract('X',sys,dof,updateSys=true);                                                % fills modal properties
             end
-            if ~isfield('P','sys')
+            if ~isfield(sys,'P')
                 autoExtract('P',sys,dof,updateSys=true);                                                % auto-checks for G 
             end
 
