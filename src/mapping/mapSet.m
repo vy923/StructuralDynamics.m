@@ -1,7 +1,7 @@
 function [B,idxO2N,idxN2O] = mapSet(SO,SN,A,B,opts)
 %  ------------------------------------------------------------------------------------------------
 %   DESCRIPTION
-%       [B,idxO2N,idxN2O] = mapSet(SO,SN,A,opts)
+%       [B,idxO2N,idxN2O] = mapSet(SO,SN,A,B,opts)
 %
 %       See also:       mustBeOfSize, mustBeEqualDims
 %       Related:        SELASM

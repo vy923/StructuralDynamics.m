@@ -17,7 +17,8 @@ function autoExtract(x,sys,dof,opts)
 %           autofill    compute P/G/modal, default=false
 %
 %   VERSION
-%   v1.2 / xx.xx.xx / --    [-] examples / [-] damping autofill from c/zeta/C
+%   v1.3 / 13.06.26 / --    added MPC elimination matrix R
+%   v1.2 / 08.06.26 / --    updateSys caller assignment 'sys', 'dof' repl. with inputname(...)
 %   v1.1 / 06.02.26 / --    isfield critical syntax bugfix
 %   v1.0 / 16.12.25 / V.Y.  recursively computes G/P/X as needed
 %  ------------------------------------------------------------------------------------------------
@@ -41,6 +42,13 @@ function autoExtract(x,sys,dof,opts)
     
     % recursive eval
     switch x(1)
+        case 'R'
+            if ~isfield(sys,'R')
+                KMM = submat(sys.K,dof.G,dof.M);
+                KMN = submat(sys.K,dof.G,dof.M,dof.G,dof.N);
+                sys.R = [eye(numel(dof.N)); -pinv(full(KMM))*KMN];
+            end
+
         case 'G'
             if ~isfield(sys,'G')
                 KAA = submat(sys.K,dof.G,dof.A);
@@ -90,6 +98,6 @@ function autoExtract(x,sys,dof,opts)
     
     % update in caller
     if updateSys
-        assignin('caller','dof',dof)
-        assignin('caller','sys',sys)
+        assignin('caller',inputname(2),sys)
+        assignin('caller',inputname(3),dof)
     end
